@@ -1,0 +1,28 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  min-height: 100vh;
+}
+
+.content {
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+@media (min-width: 1024px) {
+  .main-container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .content {
+    padding: 40px;
+  }
+}
