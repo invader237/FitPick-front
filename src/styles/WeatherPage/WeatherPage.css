@@ -1,0 +1,34 @@
+#WeatherPage-container {
+    flex: 1;
+    background: rgba(90,212,255,1);
+    margin: 0;
+    padding: 0;
+}
+
+#meteo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 50px;
+}
+
+#sun-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: bottom;
+}
+
+#cloud-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+}
+
+#temperature {
+    font-size: 100px;
+    font-weight: 900;
+    color: #fff;
+}
