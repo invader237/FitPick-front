@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import '../styles/LoginPage.css'; // Pour le style de la page
+import '../../styles/authentification/LoginPage.css'; 
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');

@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import '../styles/RegisterPage.css'; // Pour le style de la page
+import '../../styles/authentification/RegisterPage.css'; 
 
 const RegisterPage = () => {
   const [email, setEmail] = useState('');
