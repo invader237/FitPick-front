@@ -6,8 +6,9 @@ body {
 .main-container {
   display: flex;
   flex-direction: column;
-  padding: 10px;
+  justify-content: space-between;
   min-height: 100vh;
+  padding: 0px 16px 0px 16px;
 }
 
 .content {
@@ -18,8 +19,9 @@ body {
 
 @media (min-width: 1024px) {
   .main-container {
-    max-width: 900px;
+    max-width: 1024px;
     margin: 0 auto;
+    padding: 0px 8px 0px 8px;
   }
 
   .content {
