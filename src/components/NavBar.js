@@ -15,7 +15,7 @@ const Navbar = () => {
 
   const handleNavigation = (event, newValue) => {
     setValue(newValue);
-    const routes = ['/WeatherPage', '/', '/', '/profile'];
+    const routes = ['/', '/', '/', '/dashboard'];
     navigate(routes[newValue]);
   };
 
