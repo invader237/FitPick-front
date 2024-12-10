@@ -1,7 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-import '../../styles/authentification/RegisterPage.css';
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Paper,
+  Grid,
+  Alert,
+} from '@mui/material';
 
 const RegisterPage = () => {
   const [email, setEmail] = useState('');
@@ -13,10 +21,9 @@ const RegisterPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Vérifier si l'utilisateur est déjà connecté
     const token = localStorage.getItem('authToken');
     if (token) {
-      navigate('/dashboard'); // Rediriger vers le tableau de bord
+      navigate('/dashboard');
     }
   }, [navigate]);
 
@@ -24,77 +31,118 @@ const RegisterPage = () => {
     event.preventDefault();
 
     try {
-      await axios.post('http://localhost:8080/api/auth/register', {
-        email,
-        password,
-        firstName,
-        lastName,
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
+      await axios.post(
+        'http://localhost:8080/api/auth/register',
+        { email, password, firstName, lastName },
+        { headers: { 'Content-Type': 'application/json' } }
+      );
 
       setSuccess('Inscription réussie ! Redirection vers la page de connexion...');
       setError('');
-      setTimeout(() => {
-        navigate('/login');
-      }, 2000);
+      setTimeout(() => navigate('/login'), 2000);
     } catch (err) {
-      setError('Erreur lors de l\'inscription');
+      setError("Erreur lors de l'inscription");
       setSuccess('');
-      console.error('Erreur d\'inscription', err);
+      console.error("Erreur d'inscription", err);
     }
   };
 
   return (
-    <div className="register-container">
-      <h2 className="register-title">Inscription</h2>
-      {error && <p className="error-message">{error}</p>}
-      {success && <p className="success-message">{success}</p>}
-      <form onSubmit={handleSubmit}>
-        <div className="input-group">
-          <label>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div className="input-group">
-          <label>Mot de passe</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <div className="input-group">
-          <label>Prénom</label>
-          <input
-            type="text"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            required
-          />
-        </div>
-        <div className="input-group">
-          <label>Nom</label>
-          <input
-            type="text"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" className="submit-btn">S'inscrire</button>
-      </form>
-      <div className="login-link">
-        <p>Vous avez déjà un compte ? <Link to="/login">Connectez-vous</Link></p>
-      </div>
-    </div>
+    <Grid 
+      container 
+      justifyContent="center" 
+      alignItems="center" 
+      style={{ 
+        minHeight: '100vh', 
+        backgroundColor: '#f5f5f5', 
+        padding: '1rem',
+      }}
+    >
+      <Grid item xs={12} sm={10} md={6} lg={4}>
+        <Paper elevation={3} style={{ padding: '2rem', borderRadius: '8px' }}>
+          <Box textAlign="center" mb={3}>
+            <Typography variant="h5" component="h1" style={{ fontWeight: 'bold' }}>
+              Inscription
+            </Typography>
+          </Box>
+          {error && (
+            <Alert severity="error" style={{ marginBottom: '1rem' }}>
+              {error}
+            </Alert>
+          )}
+          {success && (
+            <Alert severity="success" style={{ marginBottom: '1rem' }}>
+              {success}
+            </Alert>
+          )}
+          <form onSubmit={handleSubmit}>
+            <Box mb={2}>
+              <TextField
+                fullWidth
+                label="Prénom"
+                type="text"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                required
+                variant="outlined"
+              />
+            </Box>
+            <Box mb={2}>
+              <TextField
+                fullWidth
+                label="Nom"
+                type="text"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                required
+                variant="outlined"
+              />
+            </Box>
+            <Box mb={2}>
+              <TextField
+                fullWidth
+                label="Email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                variant="outlined"
+              />
+            </Box>
+            <Box mb={2}>
+              <TextField
+                fullWidth
+                label="Mot de passe"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                variant="outlined"
+              />
+            </Box>
+            <Box textAlign="center" mb={2}>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                size="large"
+                style={{ textTransform: 'uppercase', width: '100%' }}
+              >
+                S'inscrire
+              </Button>
+            </Box>
+          </form>
+          <Box textAlign="center" mt={3}>
+            <Typography variant="body2">
+              Vous avez déjà un compte ?{' '}
+              <Link to="/login" style={{ textDecoration: 'none', color: '#1976d2' }}>
+                Connectez-vous
+              </Link>
+            </Typography>
+          </Box>
+        </Paper>
+      </Grid>
+    </Grid>
   );
 };
 
