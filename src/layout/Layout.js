@@ -9,7 +9,6 @@ import ForgotPasswordPage from '../pages/Authentification/ForgotPasswordPage'; /
 import ResetPasswordPage from '../pages/Authentification/ResetPasswordPage';   // Vérifiez le chemin exact
 
 // Composants
-import NavBar from '../components/NavBar';
 
 const Layout = () => {
   return (
@@ -25,9 +24,6 @@ const Layout = () => {
         {/* Redirige vers /login par défaut */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
-
-      {/* Affiche la NavBar uniquement si l'utilisateur est connecté */}
-      {localStorage.getItem('authToken') && <NavBar />}
     </div>
   );
 };
