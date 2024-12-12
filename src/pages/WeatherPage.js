@@ -16,7 +16,7 @@ const WeatherPage = () => {
     useEffect(() => {
         const fetchWeatherData = async () => {
             try {
-                const response = await axios.get("http://localhost:8080/weather/display?lat=49.1191&lon=6.1727");
+                const response = await axios.get("http://localhost:8080/api/weather/display?lat=49.1191&lon=6.1727");
                 setWeatherData(response.data);
             } catch (err) {
                 setError(err.message);
