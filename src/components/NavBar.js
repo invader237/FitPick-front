@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { BottomNavigation, BottomNavigationAction, Paper, useMediaQuery } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import SearchIcon from '@mui/icons-material/Search';

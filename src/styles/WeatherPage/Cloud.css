@@ -1,0 +1,12 @@
+.cloud {
+    position: relative;
+    width: 120px;
+    height: 60px;
+    background-color: transparent;
+    border-radius: 50%;
+    opacity: 0.8;
+    transition: all 1s ease-in-out;
+    pointer-events: none;
+    margin: 50px;
+
+}
