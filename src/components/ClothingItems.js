@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/ClothingItem.css';
+import '../styles/ClothingItem/ClothingItem.css';
 
 const ClothingItem = ({ item }) => {
     return (

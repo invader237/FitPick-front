@@ -1,12 +1,17 @@
 import React from 'react';
-import '../styles/InventoryPage.css';
-import ClothingItem from '../components/ClothingItem';
+import '../styles/InventoryPage/InventoryPage.css';
+import ClothingItem from '../components/ClothingItems';
+
+import tshirtImage from '../assets/t-shirt.png';
+import jeanImage from '../assets/jean-skinny.png';
+import sneakersImage from '../assets/baskets.png';
+
 
 const InventoryPage = () => {
     const clothingItems = [
-        { id: 1, name: 'T-Shirt', description: 'T-Shirt blanc', image: 'path/to/image1.jpg' },
-        { id: 2, name: 'Pantalon', description: 'Jean bleu', image: 'path/to/image2.jpg' },
-        { id: 3, name: 'Chaussures', description: 'Sneakers rouges', image: 'path/to/image3.jpg' },
+        { id: 1, name: 'T-Shirt', description: 'T-Shirt blanc', image: tshirtImage },
+        { id: 2, name: 'Pantalon', description: 'Jean bleu', image: jeanImage },
+        { id: 3, name: 'Chaussures', description: 'Sneakers rouges', image: sneakersImage },
     ];
 
     return (
