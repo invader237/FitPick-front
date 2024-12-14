@@ -3,7 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 
 // Pages
 import WeatherPage from '../pages/WeatherPage';
-import InventoryPage from '../pages/InventoryPage'; // Import de la page InventoryPage
+import InventoryPage from '../pages/InventoryPages'; // Import de la page InventoryPage
 
 import NavBar from '../components/NavBar';
 
