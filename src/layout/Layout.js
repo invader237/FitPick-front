@@ -1,19 +1,20 @@
 import React from 'react';
-import {Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 
 // Pages
 import WeatherPage from '../pages/WeatherPage';
+import InventoryPage from '../pages/InventoryPage'; // Import de la page InventoryPage
 
 import NavBar from '../components/NavBar';
-
 
 const Layout = () => {
   return (
     <div className="main-container">
-        <Routes>
-          <Route path="/" element={<WeatherPage />} />
-        </Routes>
-        <NavBar />
+      <Routes>
+        <Route path="/" element={<WeatherPage />} />
+        <Route path="/inventory" element={<InventoryPage />} /> {/* Ajout de la route pour InventoryPage */}
+      </Routes>
+      <NavBar />
     </div>
   );
 };
