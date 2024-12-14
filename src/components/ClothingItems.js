@@ -6,7 +6,6 @@ const ClothingItem = ({ item }) => {
         <div className="clothing-item">
             <img src={item.image} alt={item.name} className="clothing-image" />
             <h3>{item.name}</h3>
-            <p>{item.description}</p>
         </div>
     );
 };
