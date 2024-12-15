@@ -7,6 +7,7 @@ import Box from "@mui/joy/Box";
 import SpeedDial from "@mui/material/SpeedDial";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
 import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
 import Modal from "@mui/joy/Modal";
 import ModalDialog from "@mui/joy/ModalDialog";
 import Stack from "@mui/joy/Stack";
@@ -19,8 +20,10 @@ const InventoryPage = () => {
     const [clothingItems, setClothingItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [openModal, setOpenModal] = useState(false);
+    const [openAddModal, setOpenAddModal] = useState(false);
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const [newClothing, setNewClothing] = useState({ name: "", tagIds: "" });
+    const [deleteClothingId, setDeleteClothingId] = useState("");
 
     // Récupération des vêtements
     useEffect(() => {
@@ -41,7 +44,7 @@ const InventoryPage = () => {
     };
 
     // Soumission du formulaire d'ajout
-    const handleSubmit = async () => {
+    const handleAddSubmit = async () => {
         const tagIdArray = newClothing.tagIds
             .split(",")
             .map((tag) => tag.trim())
@@ -53,18 +56,32 @@ const InventoryPage = () => {
                 name: newClothing.name,
                 tagIds: tagIdArray,
             });
-            setOpenModal(false);
+            setOpenAddModal(false);
             setNewClothing({ name: "", tagIds: "" });
-            fetchClothingItems(); // Rafraîchir la liste
+            fetchClothingItems();
         } catch (err) {
             console.error(err);
             alert("Erreur lors de l'ajout du vêtement");
         }
     };
 
+    // Suppression d'un vêtement
+    const handleDeleteSubmit = async () => {
+        try {
+            await axios.delete(`http://localhost:8080/api/clothing/user/0/${deleteClothingId}/delete`);
+            setOpenDeleteModal(false);
+            setDeleteClothingId("");
+            fetchClothingItems();
+        } catch (err) {
+            console.error(err);
+            alert("Erreur lors de la suppression du vêtement");
+        }
+    };
+
     // Actions du bouton SpeedDial
     const actions = [
-        { icon: <AddIcon />, name: "Ajouter un vêtement", action: () => setOpenModal(true) },
+        { icon: <AddIcon />, name: "Ajouter un vêtement", action: () => setOpenAddModal(true) },
+        { icon: <DeleteIcon />, name: "Supprimer un vêtement", action: () => setOpenDeleteModal(true) },
     ];
 
     return (
@@ -84,13 +101,18 @@ const InventoryPage = () => {
                     clothingItems.map((item) => (
                         <Card key={item.clo_id} sx={{ width: "150px", textAlign: "center", boxShadow: 2 }}>
                             <img
-                                src={item.image || "..src\assets\placeholder.png.png"}
-                                alt={item.clo_lib}
+                                src={item.image || "/placeholder.png"}
+                                alt={item.clo_lib || "Vêtement"}
                                 style={{ width: "100%", height: "120px", objectFit: "cover" }}
                             />
-                            <CardContent sx={{ backgroundColor: "#555", color: "#fff", borderRadius: "0 0 8px 8px" }}>
+                            <CardContent
+                                sx={{ backgroundColor: "#555", color: "#fff", borderRadius: "0 0 8px 8px" }}
+                            >
                                 <Typography level="body2" sx={{ fontSize: "14px", fontWeight: "bold" }}>
                                     {item.clo_lib}
+                                </Typography>
+                                <Typography level="body3" sx={{ marginTop: "8px", fontSize: "12px" }}>
+                                    ID: {item.clo_id}
                                 </Typography>
                             </CardContent>
                         </Card>
@@ -102,12 +124,12 @@ const InventoryPage = () => {
 
             {/* Bouton flottant avec SpeedDial */}
             <SpeedDial
-                ariaLabel="SpeedDial ajout de vêtements"
+                ariaLabel="SpeedDial ajout et suppression de vêtements"
                 sx={{
                     position: "fixed",
                     bottom: "20px",
                     right: "20px",
-                    zIndex: 999, // Position élevée
+                    zIndex: 999,
                 }}
                 icon={<AddIcon />}
             >
@@ -122,13 +144,12 @@ const InventoryPage = () => {
             </SpeedDial>
 
             {/* Modal pour ajouter un vêtement */}
-            <Modal open={openModal} onClose={() => setOpenModal(false)}>
+            <Modal open={openAddModal} onClose={() => setOpenAddModal(false)}>
                 <ModalDialog>
                     <Typography level="h4" component="h2" sx={{ marginBottom: "16px" }}>
                         Ajouter un vêtement
                     </Typography>
                     <Stack spacing={2}>
-                        {/* Champ pour le nom */}
                         <FormControl>
                             <FormLabel>Nom du vêtement</FormLabel>
                             <Input
@@ -138,8 +159,6 @@ const InventoryPage = () => {
                                 required
                             />
                         </FormControl>
-
-                        {/* Champ pour les tags */}
                         <FormControl>
                             <FormLabel>IDs des tags (séparés par des virgules)</FormLabel>
                             <Input
@@ -148,10 +167,31 @@ const InventoryPage = () => {
                                 onChange={(e) => setNewClothing({ ...newClothing, tagIds: e.target.value })}
                             />
                         </FormControl>
-
-                        {/* Bouton d'envoi */}
-                        <Button onClick={handleSubmit} variant="solid" color="primary">
+                        <Button onClick={handleAddSubmit} variant="solid" color="primary">
                             Ajouter
+                        </Button>
+                    </Stack>
+                </ModalDialog>
+            </Modal>
+
+            {/* Modal pour supprimer un vêtement */}
+            <Modal open={openDeleteModal} onClose={() => setOpenDeleteModal(false)}>
+                <ModalDialog>
+                    <Typography level="h4" component="h2" sx={{ marginBottom: "16px" }}>
+                        Supprimer un vêtement
+                    </Typography>
+                    <Stack spacing={2}>
+                        <FormControl>
+                            <FormLabel>ID du vêtement</FormLabel>
+                            <Input
+                                placeholder="Entrez l'ID du vêtement"
+                                value={deleteClothingId}
+                                onChange={(e) => setDeleteClothingId(e.target.value)}
+                                required
+                            />
+                        </FormControl>
+                        <Button onClick={handleDeleteSubmit} variant="solid" color="danger">
+                            Supprimer
                         </Button>
                     </Stack>
                 </ModalDialog>
