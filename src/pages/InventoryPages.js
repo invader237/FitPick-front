@@ -1,101 +1,56 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios'; // Utiliser la config Axios
 import Card from '@mui/joy/Card';
-import CardCover from '@mui/joy/CardCover';
 import CardContent from '@mui/joy/CardContent';
 import Typography from '@mui/joy/Typography';
 import Box from '@mui/joy/Box';
 
-import tshirtImage from '../assets/t-shirt.png';
-import jeanImage from '../assets/jean-skinny.png';
-import sneakersImage from '../assets/baskets.png';
-
 const InventoryPage = () => {
-    const clothingItems = [
-        { id: 1, name: 'T-Shirt', image: tshirtImage },
-        { id: 2, name: 'Pantalon', image: jeanImage },
-        { id: 3, name: 'Chaussures', image: sneakersImage },
-        { id: 4, name: 'T-Shirt', image: tshirtImage },
-        { id: 5, name: 'Pantalon', image: jeanImage },
-        { id: 6, name: 'Chaussures', image: sneakersImage },
-        { id: 7, name: 'T-Shirt', image: tshirtImage },
-        { id: 8, name: 'Pantalon', image: jeanImage },
-        { id: 9, name: 'Chaussures', image: sneakersImage },
-        { id: 10, name: 'T-Shirt', image: tshirtImage },
-        { id: 11, name: 'Pantalon', image: jeanImage },
-        { id: 12, name: 'Chaussures', image: sneakersImage },
-        { id: 13, name: 'T-Shirt', image: tshirtImage },
-        { id: 14, name: 'Pantalon', image: jeanImage },
-        { id: 15, name: 'Chaussures', image: sneakersImage },
-        { id: 16, name: 'T-Shirt', image: tshirtImage },
-        { id: 17, name: 'Pantalon', image: jeanImage },
-        { id: 18, name: 'Chaussures', image: sneakersImage },
-        { id: 19, name: 'T-Shirt', image: tshirtImage },
-        { id: 20, name: 'Pantalon', image: jeanImage },
-        { id: 21, name: 'Chaussures', image: sneakersImage },
-    ];
+    const [clothingItems, setClothingItems] = useState([]);
+    const [page, setPage] = useState(0);
+    const [pageSize] = useState(10); // Taille de page
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchClothingItems = async () => {
+            try {
+                const response = await axios.get(`/api/clothing/user/1/page`, {
+                    params: { page, size: pageSize },
+                });
+                setClothingItems(response.data.content); // Assurez-vous que l'API renvoie `.content`
+            } catch (err) {
+                setError("Erreur lors du chargement des vêtements");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchClothingItems();
+    }, [page]);
+
+    if (loading) return <div>Chargement...</div>;
+    if (error) return <div>{error}</div>;
 
     return (
-        <Box
-            sx={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: 2,
-                justifyContent: 'center',
-                padding: 2,
-                backgroundColor: '#f9f9f9',
-            }}
-        >
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, justifyContent: 'center' }}>
             {clothingItems.map((item) => (
-                <Card
-                    key={item.id}
-                    sx={{
-                        flex: '1 1 calc(50% - 16px)',
-                        maxWidth: '200px',
-                        height: '250px',
-                        borderRadius: 'lg',
-                        boxShadow: 'md',
-                        overflow: 'hidden',
-                        position: 'relative',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        '@media (min-width: 400px)': {
-                            flex: '1 1 calc(33.33% - 16px)',
-                        },
-                        '@media (min-width: 900px)': {
-                            flex: '1 1 calc(25% - 16px)',
-                        },
-                    }}
-                >
-                    <CardCover>
-                        <img
-                            src={item.image}
-                            alt={item.name}
-                            style={{
-                                objectFit: 'contain',
-                                height: '70%',
-                                width: '100%',
-                                backgroundColor: '#f5f5f5',
-                            }}
-                        />
-                    </CardCover>
-                    <CardContent
-                        sx={{
-                            position: 'absolute',
-                            bottom: 0,
-                            width: '100%',
-                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                            color: '#fff',
-                            textAlign: 'center',
-                            padding: 1,
-                        }}
-                    >
-                        <Typography level="body2" noWrap>
-                            {item.name}
-                        </Typography>
+                <Card key={item.clo_id} sx={{ maxWidth: 200, textAlign: 'center' }}>
+                    <img
+                        src={item.image || '/placeholder.png'}
+                        alt={item.clo_lib}
+                        style={{ width: '100%', height: 'auto' }}
+                    />
+                    <CardContent>
+                        <Typography level="body2">{item.clo_lib}</Typography>
+                        {item.tags && <Typography level="body3">Tags: {item.tags.join(', ')}</Typography>}
                     </CardContent>
                 </Card>
             ))}
+            {/* Pagination */}
+            <div style={{ width: '100%', textAlign: 'center' }}>
+                <button onClick={() => setPage(Math.max(0, page - 1))}>Précédent</button>
+                <button onClick={() => setPage(page + 1)}>Suivant</button>
+            </div>
         </Box>
     );
 };
