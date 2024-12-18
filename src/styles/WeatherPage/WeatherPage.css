@@ -1,34 +1,58 @@
-#WeatherPage-container {
-    flex: 1;
-    background: rgba(90,212,255,1);
-    margin: 0;
-    padding: 0;
-}
-
-#meteo-container {
+/* Conteneur principal */
+.weather-container {
+    position: relative;
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-direction: column;
-    margin-top: 50px;
-}
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: background 1s ease-in-out;
+  }
+  
+  /* Soleil */
+  .sun {
+    background: linear-gradient(to bottom, #87CEFA, #00BFFF); /* Bleu ciel clair à bleu vif */
+    position: relative;
+    overflow: hidden;
+  }
+  /* Pluie */
+  .rain {
+    background: linear-gradient(to bottom, #4B9CD3, #3A7BA8); /* Bleu gris clair à foncé */
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+  }
 
-#sun-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: bottom;
-}
+  /* Neige */
+  .snow {
+    background: linear-gradient(to bottom, #ADD8E6, #B0E0E6); /* Bleu très clair à bleu pâle */
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+  }
 
-#cloud-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: row;
-}
+/* Nuages */
+.clouds {
+    background: linear-gradient(to bottom, #d3d3d3, #808080);
+  }
 
-#temperature {
-    font-size: 100px;
-    font-weight: 900;
+  /* Tempête */
+.storm {
+    background: #2f4f4f;
+    animation: storm-animation 1s linear infinite;
+  }
+
+  /* Texte */
+.weather-info {
+    position: absolute;
+    text-align: center;
     color: #fff;
-}
+  }
+  
+.error {
+    color: red;
+    font-size: 1.5rem;
+    text-align: center;
+  }

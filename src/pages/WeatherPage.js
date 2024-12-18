@@ -1,53 +1,59 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
-// Styles
 import '../styles/WeatherPage/WeatherPage.css';
 
-// WeatherPage component
-import Cloud from '../components/WeatherPage/Cloud';
-import Sun from '../components/WeatherPage/Sun';
-
 const WeatherPage = () => {
-    const [weatherData, setWeatherData] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+  const [weather, setWeather] = useState(null);
+  const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const fetchWeatherData = async () => {
-            try {
-                const response = await axios.get("http://localhost:8080/weather/display?lat=49.1191&lon=6.1727");
-                setWeatherData(response.data);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
+  const getWeatherData = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8080/api/weather/display?lat=49.1191&lon=6.1727"
+      );
+      setWeather(response.data);
+    } catch (err) {
+      setError("Erreur : impossible de récupérer les données météo.");
+    }
+  };
 
-        fetchWeatherData();
+  useEffect(() => {
+    getWeatherData();
+  }, []);
 
-    }, []);
+  const getWeatherClass = () => {
+    if (!weather) return "";
+    switch (weather.main.toLowerCase()) {
+      case "clear":
+        return "sun";
+      case "rain":
+        return "rain";
+      case "snow":
+        return "snow";
+      case "clouds":
+        return "clouds";
+      case "storm":
+      case "thunderstorm":
+        return "storm";
+      default:
+        return "";
+    }
+  };
 
-    return (
-        <div id="WeatherPage-container">
-            <h2>Météo</h2>
-
-            {loading && <p>Chargement des données...</p>}
-
-            {error && <p style={{ color: 'red' }}>Erreur: {error}</p>}
-            <div id="meteo-container">
-                <div id="sun-container">
-                    <Sun />
-                </div>
-                <div id="cloud-container">
-                    <Cloud key={1} type={""} />
-                    {weatherData && (<h1 id="temperature">{weatherData.temperature}°C</h1>)}
-                    <Cloud key={2} type={""} />
-                </div>
-            </div>
+  return (
+    <div className={`weather-container ${getWeatherClass()}`}>
+      {error && <p className="error">{error}</p>}
+      {weather ? (
+        <div className="weather-info">
+          <h1>Météo actuelle</h1>
+          <h2>{Math.round(weather.temperature)}°C</h2>
+          <p>{weather.main}</p>
         </div>
-    );
+      ) : (
+        <p>Chargement des données...</p>
+      )}
+    </div>
+  );
 };
 
 export default WeatherPage;
