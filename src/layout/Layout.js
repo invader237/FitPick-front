@@ -1,11 +1,12 @@
 import React from 'react';
-import { Route, Routes, Navigate } from 'react-router-dom';
+
+import { Route, Routes, useLocation, Navigate } from 'react-router-dom';
 
 // Pages
 import WeatherPage from '../pages/WeatherPage';
+import ProfilePage from '../pages/ProfilPage';
 import LoginPage from '../pages/Authentification/LoginPage';
 import RegisterPage from '../pages/Authentification/RegisterPage';
-import DashboardPage from '../pages/DashboardPage';
 import ForgotPasswordPage from '../pages/Authentification/ForgotPasswordPage';
 import ResetPasswordPage from '../pages/Authentification/ResetPasswordPage';
 import InventoryPage from '../pages/InventoryPages';
@@ -14,21 +15,33 @@ import InventoryPage from '../pages/InventoryPages';
 import NavBar from '../components/NavBar';
 
 const Layout = () => {
+  const location = useLocation();
+
+  // Liste des routes d'authentification
+  const authRoutes = ['/login', '/register', '/forgot-password', '/reset-password'];
+
+  // Vérifie si la route actuelle fait partie des routes d'authentification
+  const isAuthRoute = authRoutes.some((route) => location.pathname.startsWith(route));
+
   return (
     <div className="main-container">
-      {/* Définition des Routes */}
-      <Routes>
 
+      <Routes>
+        {/* Routes d'authentification */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="/reset-password/:token" element={<ResetPasswordPage />} /> 
-        <Route path="/" element={<WeatherPage />} />
-        <Route path="/inventory" element={<InventoryPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
 
+        {/* Routes principales */}
+        <Route path="/" element={<WeatherPage />} />
+        <Route path="/profil" element={<ProfilePage />} />
+          <Route path="/inventory" element={<InventoryPage />} />
       </Routes>
-      <NavBar />
+
+      {/* Affiche la Navbar uniquement si ce n'est pas une route d'authentification */}
+      {!isAuthRoute && <NavBar />}
+
     </div>
   );
 };

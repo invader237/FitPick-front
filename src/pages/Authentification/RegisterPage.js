@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
+import CryptoJS from "crypto-js";
+
 import {
   Box,
   Typography,
@@ -9,133 +11,183 @@ import {
   Paper,
   Grid,
   Alert,
-} from '@mui/material';
+  LinearProgress,
+} from "@mui/material";
+import CancelIcon from "@mui/icons-material/Cancel";
+import RegisterPageStyles from "../../styles/authentification/RegisterPageStyles";
+
+// Fonction utilitaire pour calculer la force du mot de passe
+const calculatePasswordStrength = (password) => {
+  const feedback = [];
+  let strength = 0;
+
+  if (password.length >= 8) strength += 25;
+  else feedback.push("Au moins 8 caractères");
+
+  if (/[A-Z]/.test(password)) strength += 25;
+  else feedback.push("Au moins une lettre majuscule");
+
+  if (/[0-9]/.test(password)) strength += 25;
+  else feedback.push("Au moins un chiffre");
+
+  if (/[@$!%*?&]/.test(password)) strength += 25;
+  else feedback.push("Au moins un caractère spécial (@, $, !, %, *, ?, &)");
+
+  return { strength, feedback };
+};
 
 const RegisterPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [passwordStrength, setPasswordStrength] = useState(0);
+  const [passwordFeedback, setPasswordFeedback] = useState([]);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      navigate('/dashboard');
-    }
+    const token = localStorage.getItem("authToken");
+    if (token) navigate("/dashboard");
   }, [navigate]);
+
+  const handlePasswordChange = (e) => {
+    const value = e.target.value;
+    setPassword(value);
+    const { strength, feedback } = calculatePasswordStrength(value);
+    setPasswordStrength(strength);
+    setPasswordFeedback(feedback);
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    try {
-      await axios.post(
-        'http://localhost:8080/api/auth/register',
-        { email, password, firstName, lastName },
-        { headers: { 'Content-Type': 'application/json' } }
-      );
+    if (password !== confirmPassword) {
+      setError("Les mots de passe ne correspondent pas.");
+      return;
+    }
+    if (passwordStrength < 100) {
+      setError("Le mot de passe n’est pas assez fort.");
+      return;
+    }
 
-      setSuccess('Inscription réussie ! Redirection vers la page de connexion...');
-      setError('');
-      setTimeout(() => navigate('/login'), 2000);
+    try {
+      // Hachage du mot de passe avec crypto-js
+      const hashedPassword = CryptoJS.SHA256(password).toString();
+
+      await axios.post("http://localhost:8080/api/auth/register", {
+        email,
+        password: hashedPassword, // Envoi du hash SHA256 au backend
+        firstName,
+        lastName,
+      });
+
+      setSuccess("Inscription réussie ! Redirection en cours...");
+      setError(""); // Supprimez les erreurs si l'inscription réussit
+      setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
-      setError("Erreur lors de l'inscription");
-      setSuccess('');
-      console.error("Erreur d'inscription", err);
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message); // Affiche le message du backend
+      } else {
+        setError("Une erreur inconnue est survenue.");
+      }
     }
   };
 
   return (
-    <Grid 
-      container 
-      justifyContent="center" 
-      alignItems="center" 
-      style={{ 
-        minHeight: '100vh', 
-        backgroundColor: '#f5f5f5', 
-        padding: '1rem',
-      }}
-    >
-      <Grid item xs={12} sm={10} md={6} lg={4}>
-        <Paper elevation={3} style={{ padding: '2rem', borderRadius: '8px' }}>
-          <Box textAlign="center" mb={3}>
-            <Typography variant="h5" component="h1" style={{ fontWeight: 'bold' }}>
-              Inscription
-            </Typography>
-          </Box>
-          {error && (
-            <Alert severity="error" style={{ marginBottom: '1rem' }}>
-              {error}
-            </Alert>
-          )}
-          {success && (
-            <Alert severity="success" style={{ marginBottom: '1rem' }}>
-              {success}
-            </Alert>
-          )}
+    <Grid container style={RegisterPageStyles.container}>
+      <Grid item xs={12} sm={8} md={6} lg={4}>
+        <Paper elevation={10} style={RegisterPageStyles.paper}>
+          <Typography variant="h4" style={RegisterPageStyles.title}>
+            Créez un compte
+          </Typography>
+          {error && <Alert severity="error">{error}</Alert>}
+          {success && <Alert severity="success">{success}</Alert>}
+
           <form onSubmit={handleSubmit}>
-            <Box mb={2}>
-              <TextField
-                fullWidth
-                label="Prénom"
-                type="text"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                required
-                variant="outlined"
-              />
-            </Box>
-            <Box mb={2}>
-              <TextField
-                fullWidth
-                label="Nom"
-                type="text"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                required
-                variant="outlined"
-              />
-            </Box>
-            <Box mb={2}>
-              <TextField
-                fullWidth
-                label="Email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                variant="outlined"
-              />
-            </Box>
-            <Box mb={2}>
+            <TextField
+              fullWidth
+              label="Prénom"
+              variant="outlined"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              required
+              margin="normal"
+            />
+            <TextField
+              fullWidth
+              label="Nom"
+              variant="outlined"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              required
+              margin="normal"
+            />
+            <TextField
+              fullWidth
+              label="Email"
+              variant="outlined"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              margin="normal"
+            />
+            <Box mt={2}>
               <TextField
                 fullWidth
                 label="Mot de passe"
                 type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
                 variant="outlined"
+                value={password}
+                onChange={handlePasswordChange}
+                required
               />
+              <LinearProgress
+                variant="determinate"
+                value={passwordStrength}
+                style={RegisterPageStyles.progressBar}
+                color={passwordStrength === 100 ? "success" : "primary"}
+              />
+              {passwordFeedback.length > 0 && (
+                <Box style={RegisterPageStyles.feedbackBox}>
+                  {passwordFeedback.map((feedback, index) => (
+                    <Typography
+                      key={index}
+                      style={RegisterPageStyles.feedbackText}
+                    >
+                      <CancelIcon style={RegisterPageStyles.feedbackIcon} />
+                      {feedback}
+                    </Typography>
+                  ))}
+                </Box>
+              )}
             </Box>
-            <Box textAlign="center" mb={2}>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                size="large"
-                style={{ textTransform: 'uppercase', width: '100%' }}
-              >
-                S'inscrire
-              </Button>
-            </Box>
+            <TextField
+              fullWidth
+              label="Confirmer le mot de passe"
+              type="password"
+              variant="outlined"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              margin="normal"
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              style={RegisterPageStyles.submitButton}
+              fullWidth
+            >
+              S'inscrire
+            </Button>
           </form>
-          <Box textAlign="center" mt={3}>
-            <Typography variant="body2">
-              Vous avez déjà un compte ?{' '}
-              <Link to="/login" style={{ textDecoration: 'none', color: '#1976d2' }}>
+          <Box mt={2} textAlign="center">
+            <Typography>
+              Vous avez déjà un compte ?{" "}
+              <Link to="/login" style={RegisterPageStyles.link}>
                 Connectez-vous
               </Link>
             </Typography>

@@ -1,5 +1,11 @@
 import React from 'react';
-import { BottomNavigation, BottomNavigationAction, Paper, useMediaQuery } from '@mui/material';
+import {
+  BottomNavigation,
+  BottomNavigationAction,
+  Paper,
+  useMediaQuery,
+} from '@mui/material';
+
 import HomeIcon from '@mui/icons-material/Home';
 import SearchIcon from '@mui/icons-material/Search';
 import { Person, Inventory } from '@mui/icons-material'; 
@@ -14,7 +20,9 @@ const Navbar = () => {
 
   const handleNavigation = (newValue) => {
     setValue(newValue);
-    const routes = ['/', '/', '/inventory', '/dashboard']; 
+
+    const routes = ['/', '/', '/inventory', '/profil']; 
+
     navigate(routes[newValue]);
   };
 
@@ -39,10 +47,12 @@ const Navbar = () => {
           padding: isExtraSmallScreen ? '0 5px' : '0 16px',
         }}
       >
-        <BottomNavigationAction label="Home" icon={<HomeIcon />} />
-        <BottomNavigationAction label="Search" icon={<SearchIcon />} />
+
+        <BottomNavigationAction label="Accueil" icon={<HomeIcon />} />
+        <BottomNavigationAction label="Recherche" icon={<SearchIcon />} />
         <BottomNavigationAction label="Inventaire" icon={<Inventory />} /> 
-        <BottomNavigationAction label="Profile" icon={<Person />} />
+        <BottomNavigationAction label="Profil" icon={<Person />} />
+
       </BottomNavigation>
     </Paper>
   );

@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import CryptoJS from "crypto-js"; // Importation de crypto-js
+
 import {
   Box,
   Typography,
@@ -8,104 +10,131 @@ import {
   Button,
   Paper,
   Grid,
-} from '@mui/material';
+  Alert,
+  Collapse,
+  InputAdornment,
+} from "@mui/material";
+import EmailIcon from "@mui/icons-material/Email";
+import LockIcon from "@mui/icons-material/Lock";
+import CircularProgress from "@mui/material/CircularProgress";
+import LoginPageStyles from "../../styles/authentification/LoginPageStyles";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+    setShowAlert(false);
+    setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:8080/api/auth/login', {
-        email,
-        password,
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
+      // Hachage du mot de passe avec crypto-js
+      const hashedPassword = CryptoJS.SHA256(password).toString();
 
-      localStorage.setItem('authToken', response.data.token);
+      const response = await axios.post(
+        "http://localhost:8080/api/auth/login",
+        { email, password: hashedPassword }, // Envoyer le mot de passe hashé
+        { headers: { "Content-Type": "application/json" } }
+      );
 
-      setSuccess('Connexion réussie ! Redirection en cours...');
-      setError('');
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 2000);
+      localStorage.setItem("authToken", response.data.token);
+      setSuccess("Connexion réussie ! Redirection...");
+      setShowAlert(true);
+      setTimeout(() => navigate("/profil"), 2000);
     } catch (err) {
-      setError('Email ou mot de passe incorrect');
-      setSuccess('');
-      console.error('Erreur de connexion', err);
+      setError("Email ou mot de passe incorrect.");
+      setShowAlert(true);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <Grid 
-      container 
-      justifyContent="center" 
-      alignItems="center" 
-      style={{ 
-        minHeight: '100vh', 
-        backgroundColor: '#f5f5f5', 
-        padding: '1rem',
-      }}
-    >
-      <Grid item xs={12} sm={10} md={6} lg={4}>
-        <Paper elevation={3} style={{ padding: '2rem', borderRadius: '8px' }}>
-          <Box textAlign="center" mb={3}>
-            <Typography variant="h5" component="h1" style={{ fontWeight: 'bold' }}>
-              Connexion
-            </Typography>
-          </Box>
-          <form onSubmit={handleSubmit}>
-            <Box mb={2}>
+    <Grid container style={LoginPageStyles.container}>
+      <Grid item xs={12} sm={8} md={6} lg={4}>
+        <Paper style={LoginPageStyles.paper} elevation={12}>
+          <Typography variant="h4" style={LoginPageStyles.title}>
+            Connexion
+          </Typography>
+
+          <Collapse in={showAlert}>
+            {error && (
+              <Alert severity="error" style={LoginPageStyles.alert}>
+                {error}
+              </Alert>
+            )}
+            {success && (
+              <Alert severity="success" style={LoginPageStyles.alert}>
+                {success}
+              </Alert>
+            )}
+          </Collapse>
+
+          <form onSubmit={handleSubmit} style={LoginPageStyles.form}>
+            <Box mb={3}>
               <TextField
                 fullWidth
                 label="Email"
-                type="email"
+                variant="outlined"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <EmailIcon color="primary" />
+                    </InputAdornment>
+                  ),
+                }}
                 required
-                variant="outlined"
               />
             </Box>
-            <Box mb={2}>
+            <Box mb={3}>
               <TextField
                 fullWidth
                 label="Mot de passe"
                 type="password"
+                variant="outlined"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <LockIcon color="primary" />
+                    </InputAdornment>
+                  ),
+                }}
                 required
-                variant="outlined"
               />
             </Box>
-            <Box textAlign="center" mb={2}>
+            <Box textAlign="center" mt={3}>
               <Button
                 type="submit"
                 variant="contained"
-                color="primary"
-                size="large"
-                style={{ textTransform: 'uppercase', width: '100%' }}
+                style={LoginPageStyles.button}
+                disabled={loading}
               >
-                Se connecter
+                {loading ? <CircularProgress size={24} /> : "Se connecter"}
               </Button>
             </Box>
           </form>
-          <Box textAlign="center" mt={3}>
-            <Typography variant="body2" style={{ marginBottom: '1rem' }}>
-              <Link to="/forgot-password" style={{ textDecoration: 'none', color: '#1976d2' }}>
+
+          <Box mt={3} textAlign="center">
+            <Typography variant="body2">
+              <Link to="/forgot-password" style={LoginPageStyles.link}>
                 Mot de passe oublié ?
               </Link>
             </Typography>
             <Typography variant="body2">
-              Pas de compte ?{' '}
-              <Link to="/register" style={{ textDecoration: 'none', color: '#1976d2' }}>
+              Pas de compte ?{" "}
+              <Link to="/register" style={LoginPageStyles.link}>
                 Inscrivez-vous
               </Link>
             </Typography>
