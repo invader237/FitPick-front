@@ -1,10 +1,8 @@
 import React from 'react';
-
 import { BottomNavigation, BottomNavigationAction, Paper, useMediaQuery } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import SearchIcon from '@mui/icons-material/Search';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import { Person } from '@mui/icons-material';
+import { Person, Inventory } from '@mui/icons-material'; 
 import { useNavigate } from 'react-router-dom';
 import '../styles/NavBar/NavBar.css';
 
@@ -14,9 +12,9 @@ const Navbar = () => {
   const isExtraSmallScreen = useMediaQuery('(max-width:420px)');
   const navigate = useNavigate();
 
-  const handleNavigation = (event, newValue) => {
+  const handleNavigation = (newValue) => {
     setValue(newValue);
-    const routes = ['/', '/', '/', '/dashboard'];
+    const routes = ['/', '/', '/inventory', '/dashboard']; 
     navigate(routes[newValue]);
   };
 
@@ -43,7 +41,7 @@ const Navbar = () => {
       >
         <BottomNavigationAction label="Home" icon={<HomeIcon />} />
         <BottomNavigationAction label="Search" icon={<SearchIcon />} />
-        <BottomNavigationAction label="Favorites" icon={<FavoriteIcon />} />
+        <BottomNavigationAction label="Inventaire" icon={<Inventory />} /> 
         <BottomNavigationAction label="Profile" icon={<Person />} />
       </BottomNavigation>
     </Paper>
