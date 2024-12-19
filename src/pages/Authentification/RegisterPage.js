@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-import CryptoJS from "crypto-js"; // Importation de crypto-js
+import CryptoJS from "crypto-js";
+
 import {
   Box,
   Typography,
