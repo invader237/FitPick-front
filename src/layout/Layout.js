@@ -4,12 +4,13 @@ import { Route, Routes, useLocation, Navigate } from 'react-router-dom';
 
 // Pages
 import WeatherPage from '../pages/WeatherPage';
-import ProfilePage from '../pages/ProfilPage';
+//import ProfilePage from '../pages/ProfilPage';
 import LoginPage from '../pages/Authentification/LoginPage';
 import RegisterPage from '../pages/Authentification/RegisterPage';
 import ForgotPasswordPage from '../pages/Authentification/ForgotPasswordPage';
 import ResetPasswordPage from '../pages/Authentification/ResetPasswordPage';
 import InventoryPage from '../pages/InventoryPages';
+import DashboardPage from '../pages/DashboardPage';
 
 // Composants
 import NavBar from '../components/NavBar';
@@ -35,8 +36,8 @@ const Layout = () => {
 
         {/* Routes principales */}
         <Route path="/" element={<WeatherPage />} />
-        <Route path="/profil" element={<ProfilePage />} />
-          <Route path="/inventory" element={<InventoryPage />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/inventory" element={<InventoryPage />} />
       </Routes>
 
       {/* Affiche la Navbar uniquement si ce n'est pas une route d'authentification */}
