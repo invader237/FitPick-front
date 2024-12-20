@@ -3,7 +3,6 @@ import React from 'react';
 import { BottomNavigation, BottomNavigationAction, Paper, useMediaQuery } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import SearchIcon from '@mui/icons-material/Search';
-import FavoriteIcon from '@mui/icons-material/Favorite';
 import Inventory from '@mui/icons-material/Inventory';
 import { Person } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
@@ -15,7 +14,7 @@ const Navbar = () => {
   const isExtraSmallScreen = useMediaQuery('(max-width:420px)');
   const navigate = useNavigate();
 
-  const handleNavigation = (event, newValue) => {
+  const handleNavigation = (newValue) => {
     setValue(newValue);
     const routes = ['/', '/', '/inventory', '/dashboard'];
     navigate(routes[newValue]);
