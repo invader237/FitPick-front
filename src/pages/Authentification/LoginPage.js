@@ -48,7 +48,7 @@ const LoginPage = () => {
       localStorage.setItem("authToken", response.data.token);
       setSuccess("Connexion réussie ! Redirection...");
       setShowAlert(true);
-      setTimeout(() => navigate("/profil"), 2000);
+      setTimeout(() => navigate("/dashboard"), 2000);
     } catch (err) {
       setError("Email ou mot de passe incorrect.");
       setShowAlert(true);
