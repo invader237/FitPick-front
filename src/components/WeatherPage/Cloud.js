@@ -3,7 +3,6 @@ import '../../styles/WeatherPage/Cloud.css';
 
 const Cloud = ({ type }) => {
     const [position, setPosition] = useState({ x: '0vw', y: '0vh' });
-    const [animationClass, setAnimationClass] = useState('');
     const [cloudColor, setCloudColor] = useState('');
 
     useEffect(() => {
@@ -25,7 +24,7 @@ const Cloud = ({ type }) => {
     }, [type]);
 
     return (
-        <div className={`cloud ${animationClass}`} style={{ left: position.x, top: position.y, width: '200px', height: '150px' }}>
+        <div className="cloud" style={{ left: position.x, top: position.y, width: '200px', height: '150px' }}>
             <svg
                 viewBox="0 0 200 200"
                 xmlns="http://www.w3.org/2000/svg"

@@ -14,7 +14,7 @@ const Navbar = () => {
   const isExtraSmallScreen = useMediaQuery('(max-width:420px)');
   const navigate = useNavigate();
 
-  const handleNavigation = (newValue) => {
+  const handleNavigation = (event, newValue) => {
     setValue(newValue);
     const routes = ['/', '/', '/inventory', '/dashboard'];
     navigate(routes[newValue]);

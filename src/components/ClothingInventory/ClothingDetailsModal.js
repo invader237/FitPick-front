@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import Modal from "@mui/joy/Modal";
 import ModalDialog from "@mui/joy/ModalDialog";
@@ -21,13 +21,7 @@ const ClothingDetailsModal = ({ open, onClose, imageSrc, title, clothingId }) =>
 
     const userId = 0; 
 
-    useEffect(() => {
-        if (open) {
-            fetchTags();
-        }
-    }, [open]);
-
-    const fetchTags = async () => {
+    const fetchTags = useCallback(async () => {
         try {
             setLoading(true);
             const response = await axios.get(
@@ -39,7 +33,13 @@ const ClothingDetailsModal = ({ open, onClose, imageSrc, title, clothingId }) =>
             setError("Erreur lors de la récupération des tags.");
             setLoading(false);
         }
-    };
+    }, [userId, clothingId]);
+
+    useEffect(() => {
+        if (open) {
+            fetchTags();
+        }
+    }, [open, fetchTags]);
 
     const handleDelete = () => {
         setOpenDelete(true);
