@@ -58,7 +58,13 @@ const InventoryPage = () => {
 
             <SpeedDial
                 ariaLabel="Actions d'inventaire"
-                sx={{ position: "fixed", bottom: "20px", right: "20px" }}
+                sx={{
+                    position: "absolute", // Position relative au conteneur parent
+                    bottom: "40px", // Décalage depuis le bord bas du conteneur
+                    transform: "translateY(-50%)", // Ajuste pour un centrage parfait
+                    right: "20px", // Décalage depuis le bord droit du conteneur
+                    zIndex: 1100 // S'assurer qu'il reste visible
+                }}
                 icon={<AddIcon />}
                 FabProps={{ onClick: () => setOpenAddModal(true) }}
             />
@@ -66,7 +72,7 @@ const InventoryPage = () => {
             <AddClothingModal
                 open={openAddModal}
                 onClose={() => setOpenAddModal(false)}
-                onClothingAdded={fetchClothingItems} 
+                onClothingAdded={fetchClothingItems}
             />
 
             {selectedClothing && (
