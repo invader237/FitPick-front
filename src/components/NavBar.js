@@ -24,11 +24,28 @@ const Navbar = () => {
     <Paper
       sx={{
         display: 'flex',
+        position: 'fixed',
+        alignItems: 'center',
+        bottom: 0,
         justifyContent: 'space-around',
         borderRadius: 16,
         boxShadow: 9,
         marginBottom: '8px',
-      }}
+        width: "calc(100% - 16px)",
+        maxWidth: "1080px",
+
+
+        /*
+        position: 'fixed',
+        display: 'flex',
+        justifyContent: 'center',
+        justifyContent: 'space-around',
+        widht: '100%',
+        bottom: 0,
+        borderRadius: 32,
+        margin: '8px auto',
+        */
+       }}
       elevation={3}
     >
       <BottomNavigation
@@ -37,8 +54,7 @@ const Navbar = () => {
         showLabels={!isSmallScreen}
         sx={{
           borderRadius: 32,
-          width: '100%',
-          padding: isExtraSmallScreen ? '0 5px' : '0 16px',
+          padding: isExtraSmallScreen ?'0 5px' : '0 16px',
         }}
       >
         <BottomNavigationAction label="Accueil" icon={<HomeIcon />} />

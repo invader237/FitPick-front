@@ -15,7 +15,10 @@ body {
   min-height: 100vh;
   height: 100%;
   padding: 0px 16px 0px 16px;
+}
 
+.main-container.no-padding {
+  padding: 0; 
 }
 
 .content {
@@ -36,4 +39,8 @@ body {
   .content {
     padding: 40px;
   }
+}
+
+.weather-page-bg {
+  background: rgba(90, 212, 255, 1);
 }
