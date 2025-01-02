@@ -33,18 +33,7 @@ const Navbar = () => {
         marginBottom: '8px',
         width: "calc(100% - 16px)",
         maxWidth: "1080px",
-
-
-        /*
-        position: 'fixed',
-        display: 'flex',
-        justifyContent: 'center',
-        justifyContent: 'space-around',
-        widht: '100%',
-        bottom: 0,
-        borderRadius: 32,
-        margin: '8px auto',
-        */
+        zIndex: 1000,
        }}
       elevation={3}
     >
