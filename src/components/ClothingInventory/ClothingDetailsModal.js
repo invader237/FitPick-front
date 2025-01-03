@@ -60,7 +60,7 @@ const ClothingDetailsModal = ({ open, onClose, clothing, onRefresh }) => {
         } catch (err) {
             console.error("Erreur lors de la suppression :", err);
         }
-    }
+    };
 
     return (
         <Modal open={open} onClose={onClose}>
