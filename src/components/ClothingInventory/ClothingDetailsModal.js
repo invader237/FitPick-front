@@ -60,7 +60,13 @@ const ClothingDetailsModal = ({ open, onClose, clothing, onRefresh }) => {
         } catch (err) {
             console.error("Erreur lors de la suppression :", err);
         }
-    };
+    }, [userId, clothingId]);
+
+    useEffect(() => {
+        if (open) {
+            fetchTags();
+        }
+    }, [open, fetchTags]);
 
     return (
         <Modal open={open} onClose={onClose}>
