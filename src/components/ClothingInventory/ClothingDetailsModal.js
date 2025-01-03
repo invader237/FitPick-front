@@ -1,37 +1,64 @@
-import React, { useState, useEffect, useCallback } from "react";
-import axios from "axios";
-import Modal from "@mui/joy/Modal";
-import ModalDialog from "@mui/joy/ModalDialog";
-import Typography from "@mui/joy/Typography";
-import Chip from "@mui/joy/Chip";
-import Box from "@mui/joy/Box";
-import Button from "@mui/joy/Button";
-import DeleteClothingModal from "./DeleteClothingModal";
-import IconButton from "@mui/joy/IconButton";
+import React, { useState, useEffect } from "react";
+import Modal from "@mui/material/Modal";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
-import Grid from "@mui/joy/Grid";
+import Chip from "@mui/material/Chip";
+import Stack from "@mui/material/Stack";
+import Card from "@mui/material/Card";
+import CardMedia from "@mui/material/CardMedia";
+import CardContent from "@mui/material/CardContent";
+import CardActions from "@mui/material/CardActions";
+import { deleteClothing, getClothingTags } from "../../utils/api";
+import ConfirmationModal from "./ConfirmationModal";
 import EditClothingModal from "./EditClothingModal";
 
-const ClothingDetailsModal = ({ open, onClose, imageSrc, title, clothingId }) => {
-    const [tags, setTags] = useState([]); 
-    const [loading, setLoading] = useState(true); 
-    const [error, setError] = useState(null);
-    const [openDelete, setOpenDelete] = useState(false);
+const ClothingDetailsModal = ({ open, onClose, clothing, onRefresh }) => {
     const [openEdit, setOpenEdit] = useState(false);
+    const [openDelete, setOpenDelete] = useState(false);
+    const [tags, setTags] = useState([]);
+    const [loadingTags, setLoadingTags] = useState(true);
 
-    const userId = 0; 
+    useEffect(() => {
+        const fetchTags = async () => {
+            if (!clothing?.cloId) {
+                console.error("Aucun ID de vêtement fourni. Impossible de récupérer les tags.");
+                return;
+            }
 
-    const fetchTags = useCallback(async () => {
+            try {
+                console.log("Récupération des tags pour le vêtement ID :", clothing.cloId);
+                setLoadingTags(true);
+                const fetchedTags = await getClothingTags(clothing.cloId);
+                console.log("Tags récupérés :", fetchedTags);
+                setTags(fetchedTags);
+            } catch (err) {
+                console.error("Erreur lors de la récupération des tags :", err);
+            } finally {
+                setLoadingTags(false);
+            }
+        };
+
+        if (open) {
+            fetchTags();
+        }
+    }, [open, clothing]);
+
+    const handleDelete = async () => {
+        if (!clothing?.cloId) {
+            console.error("Aucun ID de vêtement fourni pour suppression.");
+            return;
+        }
+
         try {
-            setLoading(true);
-            const response = await axios.get(
-                `http://localhost:8080/api/clothing/user/${userId}/item/${clothingId}/tags`
-            );
-            setTags(response.data);
-            setLoading(false);
+            console.log("Suppression du vêtement ID :", clothing.cloId);
+            await deleteClothing(clothing.cloId);
+            onRefresh(); // Rafraîchit la liste des vêtements dans l'inventaire
+            onClose(); // Ferme le modal
         } catch (err) {
-            setError("Erreur lors de la récupération des tags.");
-            setLoading(false);
+            console.error("Erreur lors de la suppression :", err);
         }
     }, [userId, clothingId]);
 
@@ -41,137 +68,165 @@ const ClothingDetailsModal = ({ open, onClose, imageSrc, title, clothingId }) =>
         }
     }, [open, fetchTags]);
 
-    const handleDelete = () => {
-        setOpenDelete(true);
-    };
-
-    const handleCloseDelete = () => {
-        setOpenDelete(false);
-    };
-
-    const handleOpenEdit = () => {
-        setOpenEdit(true);
-    };
-
-    const handleCloseEdit = () => {
-        setOpenEdit(false);
-    };
-
     return (
         <Modal open={open} onClose={onClose}>
-            <ModalDialog>
-                {/* Titre */}
-                <Grid
-                    container
-                    sx={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between", 
-                        alignItems: "center", 
-                        marginBottom: "16px",
-                    }}
-                >
-                    <Typography level="h4" component="h2">
-                        Détails du vêtement
-                    </Typography>
-
-                    <IconButton onClick={onClose} size="sm">
+            <Box
+                sx={{
+                    width: "90%",
+                    maxWidth: "400px",
+                    margin: "auto",
+                    marginTop: "10%",
+                    backgroundColor: "#fff",
+                    borderRadius: "16px",
+                    boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.2)",
+                    overflow: "hidden",
+                    position: "relative",
+                }}
+            >
+                <Card sx={{ borderRadius: "16px", overflow: "hidden" }}>
+                    <CardMedia
+                        component="img"
+                        image={clothing?.cloImageUrl || "https://via.placeholder.com/400"}
+                        alt={clothing?.cloLib}
+                        sx={{
+                            height: "250px",
+                            objectFit: "contain",
+                            backgroundColor: "#f9f9f9",
+                            padding: "16px",
+                        }}
+                    />
+                    <IconButton
+                        aria-label="Fermer"
+                        onClick={onClose}
+                        sx={{
+                            position: "absolute",
+                            right: "16px",
+                            top: "16px",
+                            backgroundColor: "rgba(255, 255, 255, 0.8)",
+                            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
+                            "&:hover": { backgroundColor: "#fff" },
+                        }}
+                    >
                         <CloseRoundedIcon />
                     </IconButton>
-                </Grid>
-
-                {/* Image */}
-                <img
-                    src={imageSrc}
-                    alt={title}
-                    style={{
-                        width: "100%",
-                        objectFit: "contain",
-                        marginBottom: "16px",
+                    <CardContent>
+                        <Typography
+                            variant="h6"
+                            sx={{
+                                fontWeight: "bold",
+                                textAlign: "center",
+                                marginBottom: "16px",
+                                color: "#333",
+                            }}
+                        >
+                            {clothing?.cloLib || "Détails du vêtement"}
+                        </Typography>
+                        <Typography
+                            variant="subtitle1"
+                            color="text.secondary"
+                            sx={{
+                                marginBottom: "16px",
+                                textAlign: "center",
+                            }}
+                        >
+                            Tags associés :
+                        </Typography>
+                        <Stack
+                            direction="row"
+                            spacing={1}
+                            justifyContent="center"
+                            sx={{
+                                flexWrap: "wrap",
+                                gap: "8px",
+                                padding: "8px",
+                                backgroundColor: "#f5f5f5",
+                                borderRadius: "8px",
+                                boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.1)",
+                            }}
+                        >
+                            {loadingTags ? (
+                                <Typography variant="body2">Chargement des tags...</Typography>
+                            ) : tags.length ? (
+                                tags.map((tag) => (
+                                    <Chip
+                                        key={tag.tagId}
+                                        label={tag.tagLib}
+                                        color="primary"
+                                        variant="outlined"
+                                        sx={{
+                                            fontWeight: "bold",
+                                            padding: "4px 8px",
+                                        }}
+                                    />
+                                ))
+                            ) : (
+                                <Typography variant="body2">Aucun tag</Typography>
+                            )}
+                        </Stack>
+                    </CardContent>
+                    <CardActions
+                        sx={{
+                            justifyContent: "space-around",
+                            paddingBottom: "16px",
+                            paddingTop: "8px",
+                            backgroundColor: "#f9f9f9",
+                            borderTop: "1px solid #eee",
+                        }}
+                    >
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => setOpenEdit(true)}
+                            sx={{
+                                textTransform: "none",
+                                padding: "8px 16px",
+                                borderRadius: "8px",
+                                fontWeight: "bold",
+                                backgroundImage: "linear-gradient(90deg, #007BFF, #0056b3)",
+                                "&:hover": {
+                                    backgroundImage: "linear-gradient(90deg, #0056b3, #007BFF)",
+                                },
+                            }}
+                        >
+                            Modifier
+                        </Button>
+                        <Button
+                            variant="contained"
+                            color="error"
+                            onClick={() => setOpenDelete(true)}
+                            sx={{
+                                textTransform: "none",
+                                padding: "8px 16px",
+                                borderRadius: "8px",
+                                fontWeight: "bold",
+                            }}
+                        >
+                            Supprimer
+                        </Button>
+                    </CardActions>
+                </Card>
+                <EditClothingModal
+                    open={openEdit}
+                    onClose={() => {
+                        setOpenEdit(false);
+                        onClose(); // Ferme également le ClothingDetailsModal après modification
+                    }}
+                    clothingId={clothing?.cloId}
+                    onSave={() => {
+                        onRefresh(); // Rafraîchit les données après modification
+                        onClose(); // Ferme ClothingDetailsModal après sauvegarde
                     }}
                 />
-
-                {/* Nom */}
-                <Typography level="body-md" sx={{ marginBottom: "16px" }}>
-                    Nom : <strong>{title}</strong>
-                </Typography>
-
-                {/* Liste des tags */}
-                <Typography level="body-md" sx={{ marginBottom: "8px" }}>
-                    Tags :
-                </Typography>
-
-                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                    {loading ? (
-                        <Typography level="body-sm" sx={{ color: "grey.500" }}>
-                            Chargement des tags...
-                        </Typography>
-                    ) : error ? (
-                        <Typography level="body-sm" sx={{ color: "red" }}>
-                            {error}
-                        </Typography>
-                    ) : (
-                        tags.length > 0 ? (
-                            tags.map((tag, index) => (
-                                <Chip key={`${tag.tag_id}-${index}`} label={tag.tag_lib} color="primary" variant="solid"> {tag.tag_lib} </Chip>
-                            ))
-                        ) : (
-                            <Typography level="body-sm" sx={{ color: "grey.500" }}>
-                                Aucun tag associé
-                            </Typography>
-                        )
-                    )}
-                </div>
-
-                {/* Boutons */}
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
-                    <Button
-                        onClick={handleOpenEdit}
-                        variant="solid"
-                        color="primary"
-                        sx={{
-                            marginTop: "16px",
-                            width: "48%",
-                            boxShadow: 2,
-                            borderRadius: "8px",
-                            padding: "8px 16px",
-                            fontWeight: 'bold',
-                        }}
-                    >
-                        Modifier
-                    </Button>
-                    <EditClothingModal
-                        open={openEdit}
-                        onClose={handleCloseEdit}
-                        clothingId={clothingId}
-                        initialName={title}
-                        initialTags={tags}
-                        userId={userId}
-                        onSave={fetchTags}
-                    />
-                    <Button
-                        onClick={handleDelete}
-                        variant="solid"
-                        color="danger"
-                        sx={{
-                            marginTop: "16px",
-                            width: "48%",
-                            boxShadow: 2,
-                            borderRadius: "8px",
-                            padding: "8px 16px",
-                            fontWeight: 'bold',
-                        }}
-                    >
-                        Supprimer
-                        <DeleteClothingModal
-                            open={openDelete}
-                            onClose={handleCloseDelete}
-                            clothingId={clothingId}
-                            onDelete={onClose}
-                        />
-                    </Button>
-                </Box>
-            </ModalDialog>
+                <ConfirmationModal
+                    open={openDelete}
+                    onClose={() => setOpenDelete(false)}
+                    onConfirm={handleDelete}
+                    title="Confirmer la suppression"
+                    message="Êtes-vous sûr de vouloir supprimer cet article ?"
+                    confirmText="Supprimer"
+                    cancelText="Annuler"
+                />
+            </Box>
         </Modal>
     );
 };
