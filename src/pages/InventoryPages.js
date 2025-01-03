@@ -1,63 +1,60 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import Typography from "@mui/joy/Typography";
 import Box from "@mui/joy/Box";
 import SpeedDial from "@mui/material/SpeedDial";
 import AddIcon from "@mui/icons-material/Add";
-
 import ClothingItem from "../components/ClothingInventory/ClothingItem";
-import ClothingDetailsModal from "../components/ClothingInventory/ClothingDetailsModal";
 import AddClothingModal from "../components/ClothingInventory/AddClothingModal";
+import ClothingDetailsModal from "../components/ClothingInventory/ClothingDetailsModal";
+import { getClothingItems } from "../utils/api";
 
-import shirt from "../assets/t-shirt.png";
-
-const InventoryPage = () => {
+const InventoryPages = () => {
     const [clothingItems, setClothingItems] = useState([]);
-    const [openDetailsModal, setOpenDetailsModal] = useState(false);
-    const [selectedClothing, setSelectedClothing] = useState(null);
     const [openAddModal, setOpenAddModal] = useState(false);
+    const [selectedClothing, setSelectedClothing] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         fetchClothingItems();
     }, []);
 
     const fetchClothingItems = async () => {
+        setLoading(true);
         try {
-            const response = await axios.get("http://localhost:8080/api/clothing/user/0");
-            setClothingItems(response.data || []);
+            const items = await getClothingItems();
+            setClothingItems(items);
         } catch (err) {
-            console.error("Erreur lors du chargement des vêtements :", err);
+            console.error("Erreur :", err);
+        } finally {
+            setLoading(false);
         }
     };
 
-    const handleOpenDetailsModal = (item) => {
-        setSelectedClothing(item);
-        setOpenDetailsModal(true);
-    };
-
-    const handleCloseDetailsModal = () => {
-        setOpenDetailsModal(false);
-        setSelectedClothing(null);
+    const handleOpenDetails = (id) => {
+        const clothing = clothingItems.find((item) => item.cloId === id);
+        setSelectedClothing(clothing);
     };
 
     return (
-        <Box className="inventory-page" sx={{ position: "relative", minHeight: "100vh" }}>
-            <Typography level="h2">Votre Inventaire</Typography>
-
-            <Box sx={{ display: "flex", flexWrap: "wrap", gap: "20px", justifyContent: "left" }}>
-                {clothingItems.map((item) => (
-                    <ClothingItem
-                        key={item.clo_id}
-                        imageSrc={shirt}
-                        title={item.clo_lib}
-                        clothingId={item.clo_id}
-                        onClick={() => handleOpenDetailsModal(item)}
-                    />
-                ))}
-            </Box>
-
+        <Box sx={{ padding: "16px" }}>
+            <Typography level="h4">Votre inventaire</Typography>
+            {loading ? (
+                <Typography>Chargement...</Typography>
+            ) : (
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
+                    {clothingItems.map((item) => (
+                        <ClothingItem
+                            key={item.cloId}
+                            clothingId={item.cloId}
+                            title={item.cloLib}
+                            imageSrc={item.cloImageUrl}
+                            onClick={handleOpenDetails}
+                        />
+                    ))}
+                </Box>
+            )}
             <SpeedDial
-                ariaLabel="Actions d'inventaire"
+                ariaLabel="Ajouter un vêtement"
                 sx={{
                     position: "absolute", // Position relative au conteneur parent
                     bottom: "40px", // Décalage depuis le bord bas du conteneur
@@ -66,26 +63,28 @@ const InventoryPage = () => {
                     zIndex: 1100 // S'assurer qu'il reste visible
                 }}
                 icon={<AddIcon />}
-                FabProps={{ onClick: () => setOpenAddModal(true) }}
+                onClick={() => setOpenAddModal(true)}
+                sx={{ position: "fixed", bottom: "16px", right: "16px" }}
             />
-
             <AddClothingModal
                 open={openAddModal}
                 onClose={() => setOpenAddModal(false)}
                 onClothingAdded={fetchClothingItems}
             />
-
             {selectedClothing && (
                 <ClothingDetailsModal
-                    open={openDetailsModal}
-                    onClose={handleCloseDetailsModal}
-                    imageSrc={shirt}
-                    title={selectedClothing.clo_lib}
-                    clothingId={selectedClothing.clo_id}
-                />
+                open={!!selectedClothing}
+                onClose={() => setSelectedClothing(null)}
+                clothing={selectedClothing}
+                onRefresh={() => {
+                    // Rafraîchit uniquement les détails du vêtement sélectionné
+                    fetchClothingItems(); // Facultatif : si la liste doit aussi être mise à jour
+                }}
+            />
+
             )}
         </Box>
     );
 };
 
-export default InventoryPage;
+export default InventoryPages;
