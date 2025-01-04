@@ -27,7 +27,7 @@ const Layout = () => {
   const isWeatherPage = location.pathname === '/';
 
   return (
-    <div className={`main-container ${isWeatherPage ? 'weather-page-bg' : "" }`}>
+    <div className={`main-container ${isWeatherPage ? 'weather-page-bg' : ""}`}>
 
       <Routes>
         {/* Routes d'authentification */}
