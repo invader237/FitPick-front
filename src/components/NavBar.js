@@ -16,7 +16,7 @@ const Navbar = () => {
 
   const handleNavigation = (event, newValue) => {
     setValue(newValue);
-    const routes = ['/', '/', '/inventory', '/dashboard'];
+    const routes = ['/', '/search', '/inventory', '/profile'];
     navigate(routes[newValue]);
   };
 
