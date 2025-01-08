@@ -4,13 +4,12 @@ import { Route, Routes, useLocation } from 'react-router-dom';
 
 // Pages
 import WeatherPage from '../pages/WeatherPage';
-//import ProfilePage from '../pages/ProfilPage';
+import ProfilePage from '../pages/ProfilPage';
 import LoginPage from '../pages/Authentification/LoginPage';
 import RegisterPage from '../pages/Authentification/RegisterPage';
 import ForgotPasswordPage from '../pages/Authentification/ForgotPasswordPage';
 import ResetPasswordPage from '../pages/Authentification/ResetPasswordPage';
 import InventoryPage from '../pages/InventoryPages';
-import DashboardPage from '../pages/DashboardPage';
 
 // Composants
 import NavBar from '../components/NavBar';
@@ -26,7 +25,6 @@ const Layout = () => {
 
   return (
     <div className="main-container">
-
       <Routes>
         {/* Routes d'authentification */}
         <Route path="/login" element={<LoginPage />} />
@@ -36,13 +34,12 @@ const Layout = () => {
 
         {/* Routes principales */}
         <Route path="/" element={<WeatherPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
         <Route path="/inventory" element={<InventoryPage />} />
       </Routes>
 
       {/* Affiche la Navbar uniquement si ce n'est pas une route d'authentification */}
       {!isAuthRoute && <NavBar />}
-
     </div>
   );
 };
