@@ -7,6 +7,7 @@ import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
 
+
 const OutfitDetailsModal = ({ open, onClose, outfit, onEdit, onDelete }) => {
     return (
         <Modal open={open} onClose={onClose}>
@@ -22,15 +23,19 @@ const OutfitDetailsModal = ({ open, onClose, outfit, onEdit, onDelete }) => {
                 }}
             >
                 <Typography variant="h5" sx={{ textAlign: "center", mb: 2 }}>
-                    {outfit.fitLib}
+                    {outfit.fit_lib}
                 </Typography>
                 <Typography variant="subtitle1" sx={{ textAlign: "center", mb: 2 }}>
-                    {outfit.clothes.length} vêtements
+                    {/*outfit.clothes.length()*/} vêtements
                 </Typography>
                 <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", mb: 2 }}>
-                    {outfit.clothes.map((clothing) => (
-                        <Chip key={clothing.cloId} label={clothing.cloLib} />
-                    ))}
+                    {Array.isArray(outfit.clothes) ? (
+                        outfit.clothes.map((clothing, index) => (
+                            <Chip label={clothing.cloLib} key={index} />
+                        ))
+                    ) : (
+                        <Typography variant="body2">Aucun vêtement disponible</Typography>
+                    )}
                 </Stack>
                 <Button variant="contained" fullWidth onClick={onEdit} sx={{ mb: 2 }}>
                     Modifier

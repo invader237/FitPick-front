@@ -4,7 +4,8 @@ import Typography from "@mui/joy/Typography";
 import OutfitDetailsModal from "./OutfitDetailsModal";
 import AddIcon from "@mui/icons-material/Add";
 import SpeedDial from "@mui/material/SpeedDial";
-import { getOutfits } from "../../utils/api";
+import OutfitItem from "../../components/OutfitInventory/OutfitItem";
+import { getAllOutfits } from "../../utils/api";
 
 const OutfitInventory = () => {
     const [outfits, setOutfits] = useState([]);
@@ -18,17 +19,20 @@ const OutfitInventory = () => {
     const fetchOutfits = async () => {
         setLoading(true);
         try {
-            const data = await getOutfits();
+            const data = await getAllOutfits(); 
             setOutfits(data);
         } catch (err) {
             console.error("Erreur :", err);
         } finally {
             setLoading(false);
         }
+        //afficher les tenues
+        console.log("Outfits :");
+        console.log(outfits);
     };
 
     const handleOpenDetails = (id) => {
-        const outfit = outfits.find((o) => o.fitId === id);
+        const outfit = outfits.find((o) => o.fit_id === id);
         setSelectedOutfit(outfit);
     };
 
@@ -38,21 +42,11 @@ const OutfitInventory = () => {
                 <Typography>Chargement...</Typography>
             ) : (
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
-                    {outfits.map((outfit) => (
-                        <Box
-                            key={outfit.fitId}
-                            onClick={() => handleOpenDetails(outfit.fitId)}
-                            sx={{
-                                padding: 2,
-                                border: "1px solid #ddd",
-                                borderRadius: 2,
-                                cursor: "pointer",
-                                "&:hover": { backgroundColor: "#f5f5f5" },
-                            }}
-                        >
-                            <Typography variant="h6">{outfit.fitLib}</Typography>
-                            <Typography>{outfit.clothes.length} vêtements</Typography>
-                        </Box>
+                    {outfits.map((item) => (
+                        <OutfitItem
+                            outfit={item}
+                            onClick={handleOpenDetails}
+                        />
                     ))}
                 </Box>
             )}
