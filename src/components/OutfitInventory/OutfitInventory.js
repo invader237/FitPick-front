@@ -26,9 +26,6 @@ const OutfitInventory = () => {
         } finally {
             setLoading(false);
         }
-        //afficher les tenues
-        console.log("Outfits :");
-        console.log(outfits);
     };
 
     const handleOpenDetails = (id) => {
