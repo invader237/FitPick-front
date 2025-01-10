@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { baseURL } from "../config/baseUrl";
 
 // Styles
 import '../styles/WeatherPage/WeatherPage.css';
@@ -16,7 +17,7 @@ const WeatherPage = () => {
     useEffect(() => {
         const fetchWeatherData = async () => {
             try {
-                const response = await axios.get("http://localhost:8080/api/weather/display?lat=49.1191&lon=6.1727");
+                const response = await axios.get(baseURL + "/api/weather/display?lat=49.1191&lon=6.1727");
                 setWeatherData(response.data);
             } catch (err) {
                 setError(err.message);

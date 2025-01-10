@@ -15,6 +15,7 @@ import LockResetIcon from "@mui/icons-material/LockReset";
 import ResetPasswordPageStyles from "../../styles/authentification/ResetPasswordPageStyles";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import CryptoJS from "crypto-js"; // Importation de crypto-js
+import { baseURL } from "../../config/baseUrl";
 
 const ResetPasswordPage = () => {
   const [newPassword, setNewPassword] = useState("");
@@ -84,7 +85,7 @@ const ResetPasswordPage = () => {
       const hashedPassword = CryptoJS.SHA256(newPassword).toString();
 
       const response = await fetch(
-        `http://localhost:8080/api/auth/reset-password?token=${token}&newPassword=${encodeURIComponent(
+        baseURL + `/api/auth/reset-password?token=${token}&newPassword=${encodeURIComponent(
           hashedPassword
         )}`,
         { method: "POST" }

@@ -14,6 +14,7 @@ import {
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import axios from "axios";
+import { baseURL } from "../../config/baseUrl";
 import forgotPasswordStyles from "../../styles/authentification/ForgotPasswordPageStyles";
 
 const ForgotPasswordPage = () => {
@@ -42,7 +43,7 @@ const ForgotPasswordPage = () => {
     try {
       // Appel à l'API
       await axios.post(
-        "http://localhost:8080/api/auth/forgot-password",
+        baseURL + "/api/auth/forgot-password",
         null,
         { params: { email } }
       );
