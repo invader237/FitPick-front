@@ -1,7 +1,7 @@
 import axiosInstance from "./axiosConfig";
 
 /**
- * API Client for clothing management and user profiles.
+ * API Client for clothing management.
  */
 
 /**
@@ -109,7 +109,7 @@ export const uploadImage = async (file) => {
             },
         });
 
-        return response.data;
+        return response.data; // Ensure API returns the URL under this key
     } catch (error) {
         console.error("Error uploading image:", error);
         throw error;

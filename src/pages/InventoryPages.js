@@ -36,7 +36,7 @@ const InventoryPages = () => {
     };
 
     return (
-        <Box sx={{ padding: "16px" }}>
+        <Box sx={{ padding: "16px", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
             <Typography level="h4">Votre inventaire</Typography>
             {loading ? (
                 <Typography>Chargement...</Typography>
@@ -54,10 +54,16 @@ const InventoryPages = () => {
                 </Box>
             )}
             <SpeedDial
-                ariaLabel="Ajouter un vêtement"
+                ariaLabel="Actions d'inventaire"
+                sx={{
+                    position: "fixed", // Fixé par rapport à l'écran
+                    alignSelf: "flex-end", // Aligné à droite
+                    transform: "translateY(-50%)", // Pour aligner parfaitement au centre vertical
+                    bottom: "40px",
+                    zIndex: 1100 // Assurez-vous qu'il reste visible au-dessus des autres éléments
+                }}
                 icon={<AddIcon />}
                 onClick={() => setOpenAddModal(true)}
-                sx={{ position: "fixed", bottom: "16px", right: "16px" }}
             />
             <AddClothingModal
                 open={openAddModal}

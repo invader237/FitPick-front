@@ -23,8 +23,11 @@ const Layout = () => {
   // Vérifie si la route actuelle fait partie des routes d'authentification
   const isAuthRoute = authRoutes.some((route) => location.pathname.startsWith(route));
 
+  const isWeatherPage = location.pathname === '/';
+
   return (
-    <div className="main-container">
+    <div className={`main-container ${isWeatherPage ? 'weather-page-bg' : "" }`}>
+
       <Routes>
         {/* Routes d'authentification */}
         <Route path="/login" element={<LoginPage />} />
