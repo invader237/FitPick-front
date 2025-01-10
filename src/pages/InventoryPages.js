@@ -63,7 +63,7 @@ const InventoryPages = () => {
                     zIndex: 1100 // Assurez-vous qu'il reste visible au-dessus des autres éléments
                 }}
                 icon={<AddIcon />}
-                FabProps={{ onClick: () => setOpenAddModal(true) }}
+                onClick={() => setOpenAddModal(true)}
             />
             <AddClothingModal
                 open={openAddModal}
