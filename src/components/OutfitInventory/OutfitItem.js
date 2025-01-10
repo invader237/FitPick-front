@@ -5,10 +5,9 @@ import CardOverflow from "@mui/joy/CardOverflow";
 import CardContent from "@mui/joy/CardContent";
 import AspectRatio from "@mui/joy/AspectRatio";
 import Typography from "@mui/joy/Typography";
+import Button from "@mui/joy/Button";
 
-const OutfitItem = ({ outfit, onClick,
-    defaultImage = "/assets/default-clothing.png",
-    }) => {
+const OutfitItem = ({ outfit, onClick, onDelete }) => {
     return (
         <Card
             variant="outlined"
@@ -25,25 +24,38 @@ const OutfitItem = ({ outfit, onClick,
             <CardOverflow>
                 <AspectRatio ratio="1">
                     <img
-                        alt={outfit.fit_lib}
-                        onError={(e) => (e.target.src = defaultImage)}
+                        src={outfit.image_url || "../assets/outfit-placeholder.png"}
+                        alt={outfit.fit_lib || "Unnamed Outfit"}
                         style={{ width: "100%", objectFit: "cover" }}
                     />
                 </AspectRatio>
             </CardOverflow>
             <CardContent>
-                <Typography textAlign="center">
-                    {outfit.fit_lib}
-                </Typography>
+                <Typography textAlign="center">{outfit.fit_lib || "Unnamed Outfit"}</Typography>
             </CardContent>
+            <Button
+                variant="outlined"
+                color="danger"
+                onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete();
+                }}
+                sx={{ margin: "8px", alignSelf: "center" }}
+            >
+                Supprimer
+            </Button>
         </Card>
     );
 };
 
 OutfitItem.propTypes = {
-    outfit: PropTypes.object.isRequired,
-    onDelete: PropTypes.func.isRequired,
+    outfit: PropTypes.shape({
+        fit_id: PropTypes.number.isRequired,
+        fit_lib: PropTypes.string,
+        image_url: PropTypes.string,
+    }).isRequired,
     onClick: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired,
 };
 
 export default OutfitItem;
