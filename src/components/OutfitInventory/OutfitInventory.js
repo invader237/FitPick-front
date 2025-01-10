@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import Box from "@mui/joy/Box";
 import Typography from "@mui/joy/Typography";
-import OutfitDetailsModal from "./OutfitDetailsModal";
-import AddIcon from "@mui/icons-material/Add";
 import SpeedDial from "@mui/material/SpeedDial";
-import OutfitItem from "../../components/OutfitInventory/OutfitItem";
-import { getAllOutfits } from "../../utils/api";
+import AddIcon from "@mui/icons-material/Add";
+import OutfitItem from "./OutfitItem";
+import OutfitDetailsModal from "./OutfitDetailsModal";
+import AddOutfitModal from "./AddOutfitModal";
+import { getAllOutfits, deleteOutfit } from "../../utils/api";
 
 const OutfitInventory = () => {
     const [outfits, setOutfits] = useState([]);
     const [selectedOutfit, setSelectedOutfit] = useState(null);
+    const [openAddModal, setOpenAddModal] = useState(false);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -19,12 +21,26 @@ const OutfitInventory = () => {
     const fetchOutfits = async () => {
         setLoading(true);
         try {
-            const data = await getAllOutfits(); 
+            const data = await getAllOutfits();
+            console.log("Réponse des tenues reçues de l'API :", data); // Inspectez ici
             setOutfits(data);
         } catch (err) {
-            console.error("Erreur :", err);
+            console.error("Erreur lors de la récupération des tenues :", err);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleDeleteOutfit = async (outfitId) => {
+        if (window.confirm("Are you sure you want to delete this outfit?")) {
+            try {
+                await deleteOutfit(outfitId);
+                setOutfits((prevOutfits) => prevOutfits.filter((outfit) => outfit.fit_id !== outfitId));
+                alert("Outfit deleted successfully.");
+            } catch (err) {
+                console.error("Error deleting outfit:", err);
+                alert("Failed to delete outfit. Please try again.");
+            }
         }
     };
 
@@ -34,32 +50,46 @@ const OutfitInventory = () => {
     };
 
     return (
-        <Box>
+        <Box sx={{ padding: "16px", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+            <Typography level="h4" sx={{ textAlign: "center", marginBottom: "20px" }}>
+                Vos tenues
+            </Typography>
             {loading ? (
-                <Typography>Chargement...</Typography>
+                <Typography sx={{ textAlign: "center" }}>Chargement...</Typography>
             ) : (
-                <Box sx={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: "16px", justifyContent: "center" }}>
                     {outfits.map((item) => (
                         <OutfitItem
+                            key={item.fit_id}
                             outfit={item}
                             onClick={handleOpenDetails}
+                            onDelete={() => handleDeleteOutfit(item.fit_id)}
                         />
                     ))}
                 </Box>
             )}
             <SpeedDial
                 ariaLabel="Ajouter une tenue"
-                sx={{ position: "fixed", bottom: 40, right: 40 }}
+                sx={{
+                    position: "fixed",
+                    bottom: 40,
+                    right: 40,
+                }}
                 icon={<AddIcon />}
-                onClick={() => console.log("Ajouter une tenue")} // Ajouter la modal correspondante
+                onClick={() => setOpenAddModal(true)}
+            />
+            <AddOutfitModal
+                open={openAddModal}
+                onClose={() => setOpenAddModal(false)}
+                onOutfitAdded={fetchOutfits}
             />
             {selectedOutfit && (
                 <OutfitDetailsModal
                     open={!!selectedOutfit}
                     onClose={() => setSelectedOutfit(null)}
                     outfit={selectedOutfit}
-                    onEdit={() => console.log("Modifier la tenue")} // Ajouter l'édition
-                    onDelete={() => console.log("Supprimer la tenue")} // Ajouter la suppression
+                    onEdit={fetchOutfits}
+                    onDelete={fetchOutfits}
                 />
             )}
         </Box>
