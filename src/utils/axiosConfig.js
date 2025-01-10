@@ -1,8 +1,9 @@
 import axios from "axios";
+import { baseURL } from "../config/baseUrl";
 
 // Configure Axios avec le token JWT
 const axiosInstance = axios.create({
-    baseURL: "http://localhost:8080", // URL de l'API backend
+    baseURL: baseURL,
 });
 
 // Intercepteur pour ajouter le token Authorization

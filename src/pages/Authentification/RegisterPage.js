@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
+import { baseURL } from "../../config/baseUrl";
 import CryptoJS from "crypto-js";
 
 import {
@@ -77,7 +78,7 @@ const RegisterPage = () => {
       // Hachage du mot de passe avec crypto-js
       const hashedPassword = CryptoJS.SHA256(password).toString();
 
-      await axios.post("http://localhost:8080/api/auth/register", {
+      await axios.post(baseURL + "/api/auth/register", {
         email,
         password: hashedPassword, // Envoi du hash SHA256 au backend
         firstName,
