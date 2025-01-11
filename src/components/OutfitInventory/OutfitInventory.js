@@ -3,10 +3,10 @@ import Box from "@mui/joy/Box";
 import Typography from "@mui/joy/Typography";
 import SpeedDial from "@mui/material/SpeedDial";
 import AddIcon from "@mui/icons-material/Add";
-import OutfitItem from "./OutfitItem";
 import OutfitDetailsModal from "./OutfitDetailsModal";
 import AddOutfitModal from "./AddOutfitModal";
 import { getAllOutfits, deleteOutfit } from "../../utils/api";
+import InventoryItem from "../Inventory/InventoryItem";
 
 const OutfitInventory = () => {
     const [outfits, setOutfits] = useState([]);
@@ -50,22 +50,31 @@ const OutfitInventory = () => {
     };
 
     return (
-        <Box sx={{ padding: "16px", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-            <Typography level="h4" sx={{ textAlign: "center", marginBottom: "20px" }}>
-                Vos tenues
-            </Typography>
+        <Box>
             {loading ? (
                 <Typography sx={{ textAlign: "center" }}>Chargement...</Typography>
             ) : (
-                <Box sx={{ display: "flex", flexWrap: "wrap", gap: "16px", justifyContent: "center" }}>
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
                     {outfits.map((item) => (
+                        <InventoryItem
+                            key={item.fit_id}
+                            itemId={item.fit_id}
+                            title={item.fit_lib}
+                            imageSrc={"https://mon-projet-bucket.s3.eu-north-1.amazonaws.com/311737e2-d5ec-452f-a848-6d50c40eb9ba_t-shirt.d8302ac14cf91e917119.png"}
+                            onClick={handleOpenDetails}
+                            type="outfit"
+                            /*clothingNames={item.clothing.map((c) => c.clo_lib)}*/
+                        />
+                    ))}
+                        {/*
+
                         <OutfitItem
                             key={item.fit_id}
                             outfit={item}
                             onClick={handleOpenDetails}
                             onDelete={() => handleDeleteOutfit(item.fit_id)}
                         />
-                    ))}
+                    ))} */}
                 </Box>
             )}
             <SpeedDial
@@ -87,9 +96,10 @@ const OutfitInventory = () => {
                 <OutfitDetailsModal
                     open={!!selectedOutfit}
                     onClose={() => setSelectedOutfit(null)}
-                    outfit={selectedOutfit}
+                    outfitId={selectedOutfit.fit_id}
                     onEdit={fetchOutfits}
                     onDelete={fetchOutfits}
+                    onRefresh={fetchOutfits}
                 />
             )}
         </Box>

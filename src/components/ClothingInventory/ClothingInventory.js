@@ -3,10 +3,10 @@ import Box from "@mui/joy/Box";
 import Typography from "@mui/joy/Typography";
 import SpeedDial from "@mui/material/SpeedDial";
 import AddIcon from "@mui/icons-material/Add";
-import ClothingItem from "./ClothingItem";
 import AddClothingModal from "./AddClothingModal";
 import ClothingDetailsModal from "./ClothingDetailsModal";
 import { getClothingItems } from "../../utils/api";
+import InventoryItem from "../Inventory/InventoryItem";
 
 const ClothingInventory = () => {
     const [clothingItems, setClothingItems] = useState([]);
@@ -42,12 +42,13 @@ const ClothingInventory = () => {
             ) : (
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
                     {clothingItems.map((item) => (
-                        <ClothingItem
+                        <InventoryItem
                             key={item.cloId}
-                            clothingId={item.cloId}
+                            itemId={item.cloId}
                             title={item.cloLib}
                             imageSrc={item.cloImageUrl}
                             onClick={handleOpenDetails}
+                            type="clothing"
                         />
                     ))}
                 </Box>
