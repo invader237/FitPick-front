@@ -52,7 +52,7 @@ const AddOutfitModal = ({ open, onClose, onOutfitAdded }) => {
 
     // Handle form submission
     const handleSubmit = async () => {
-        if (!name || selectedClothing.length !== 4) {
+        if (!name || selectedClothing.length > 4 || selectedClothing.length < 2) {
             setError("You must select exactly 4 clothing items and provide a name.");
             return;
         }
