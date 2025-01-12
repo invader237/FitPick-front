@@ -22,7 +22,6 @@ const OutfitInventory = () => {
         setLoading(true);
         try {
             const data = await getAllOutfits();
-            console.log("Réponse des tenues reçues de l'API :", data); // Inspectez ici
             setOutfits(data);
         } catch (err) {
             console.error("Erreur lors de la récupération des tenues :", err);
@@ -32,14 +31,14 @@ const OutfitInventory = () => {
     };
 
     const handleDeleteOutfit = async (outfitId) => {
-        if (window.confirm("Are you sure you want to delete this outfit?")) {
+        if (window.confirm("Êtes-vous sûr de vouloir supprimer cette tenue ?")) {
             try {
                 await deleteOutfit(outfitId);
                 setOutfits((prevOutfits) => prevOutfits.filter((outfit) => outfit.id !== outfitId));
-                alert("Outfit deleted successfully.");
+                alert("Tenue supprimée avec succès.");
             } catch (err) {
-                console.error("Error deleting outfit:", err);
-                alert("Failed to delete outfit. Please try again.");
+                console.error("Erreur lors de la suppression de la tenue :", err);
+                alert("Échec de la suppression de la tenue. Veuillez réessayer.");
             }
             fetchOutfits();
         }
@@ -51,17 +50,37 @@ const OutfitInventory = () => {
     };
 
     return (
-        <Box>
+        <Box
+            sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                padding: "16px",
+            }}
+        >
             {loading ? (
                 <Typography sx={{ textAlign: "center" }}>Chargement...</Typography>
             ) : (
-                <Box sx={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "16px",
+                        justifyContent: "left", 
+                        alignItems: "flex-start", 
+                        width: "100%",
+                        maxWidth: "1200px",
+                        "@media (max-width: 768px)": {
+                            gap: "12px",
+                        },
+                    }}
+                >
                     {outfits.map((item) => (
                         <InventoryItem
-                            key={item.id} 
-                            itemId={item.id} 
-                            title={item.name} 
-                            imageSrc={item.cloImageUrlList} 
+                            key={item.id}
+                            itemId={item.id}
+                            title={item.name}
+                            imageSrc={item.cloImageUrlList}
                             onClick={handleOpenDetails}
                             type="outfit"
                             defaultImage="https://mon-projet-bucket.s3.eu-north-1.amazonaws.com/311737e2-d5ec-452f-a848-6d50c40eb9ba_t-shirt.d8302ac14cf91e917119.png"

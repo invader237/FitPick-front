@@ -20,11 +20,22 @@ const InventoryItem = ({
             variant="outlined"
             onClick={() => onClick(itemId)}
             sx={{
-                width: type === "clothing" ? "150px" : "300px",
-                margin: "4px",
+                flex: type === "clothing" ? "1 1 calc(20% - 16px)" : "1 1 calc(28% - 16px)", 
+                margin: "8px",
                 display: "flex",
                 flexDirection: "column",
                 cursor: "pointer",
+                maxWidth: "calc(28% - 16px)",
+                minHeight: "250px", // Hauteur minimale pour uniformiser les tailles
+                justifyContent: "space-between", // Pour remplir verticalement
+                "@media (max-width: 900px)": {
+                    flex: "1 1 calc(50% - 16px)", // 2 items par ligne
+                    maxWidth: "calc(50% - 16px)",
+                },
+                "@media (max-width: 600px)": {
+                    flex: "1 1 calc(100% - 16px)", // 1 item par ligne
+                    maxWidth: "calc(100% - 16px)",
+                },
                 "&:hover": { boxShadow: 4 },
             }}
         >
@@ -39,7 +50,7 @@ const InventoryItem = ({
                             style={{
                                 width: "100%",
                                 height: "100%",
-                                objectFit: "contain", // Ajuste pour rendre toute l'image visible
+                                objectFit: "cover",
                             }}
                         />
                     ) : (
@@ -50,7 +61,7 @@ const InventoryItem = ({
                                 flexDirection: "row",
                                 flexWrap: "wrap",
                                 gap: "0",
-                                justifyContent: imageSrc.length === 2 ? "center" : "space-between", 
+                                justifyContent: "space-between",
                                 alignItems: "center",
                                 width: "100%",
                                 height: "100%",
@@ -60,10 +71,10 @@ const InventoryItem = ({
                                 <div
                                     key={index}
                                     style={{
-                                        flex: imageSrc.length === 2 ? "0 0 45%" : "1 1 50%", 
-                                        boxSizing: "border-box", 
+                                        flex: "1 1 45%",
+                                        boxSizing: "border-box",
                                         margin: "0",
-                                        height: "50%", 
+                                        height: "50%",
                                     }}
                                 >
                                     <img
@@ -73,25 +84,10 @@ const InventoryItem = ({
                                         style={{
                                             width: "100%",
                                             height: "100%",
-                                            objectFit: "cover", 
+                                            objectFit: "cover",
                                         }}
                                     />
                                 </div>
-                            ))}
-
-                            {/* Remplissage des espaces vides si moins de 4 images */}
-                            {Array.from({
-                                length: 4 - (imageSrc?.length || 0),
-                            }).map((_, idx) => (
-                                <div
-                                    key={`empty-${idx}`}
-                                    style={{
-                                        flex: "1 1 50%",
-                                        backgroundColor: "#f0f0f0",
-                                        margin: "0",
-                                        height: "50%", // Ajuste la hauteur pour correspondre aux images existantes
-                                    }}
-                                ></div>
                             ))}
                         </div>
                     )}
