@@ -1,88 +1,70 @@
 import React, { useState, useEffect } from "react";
-import Typography from "@mui/joy/Typography";
-import Box from "@mui/joy/Box";
-import SpeedDial from "@mui/material/SpeedDial";
-import AddIcon from "@mui/icons-material/Add";
-import ClothingItem from "../components/ClothingInventory/ClothingItem";
-import AddClothingModal from "../components/ClothingInventory/AddClothingModal";
-import ClothingDetailsModal from "../components/ClothingInventory/ClothingDetailsModal";
-import { getClothingItems } from "../utils/api";
+import { Tabs, Tab, TabList, TabPanel } from "@mui/joy";
+import ClothingInventory from "../components/ClothingInventory/ClothingInventory";
+import OutfitInventory from "../components/OutfitInventory/OutfitInventory";
+import { tabClasses } from '@mui/joy/Tab';
 
 const InventoryPages = () => {
-    const [clothingItems, setClothingItems] = useState([]);
-    const [openAddModal, setOpenAddModal] = useState(false);
-    const [selectedClothing, setSelectedClothing] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState(0);
 
     useEffect(() => {
-        fetchClothingItems();
+        const savedTab = localStorage.getItem("activeTab");
+        if (savedTab) {
+            setActiveTab(Number(savedTab));
+        }
     }, []);
 
-    const fetchClothingItems = async () => {
-        setLoading(true);
-        try {
-            const items = await getClothingItems();
-            setClothingItems(items);
-        } catch (err) {
-            console.error("Erreur :", err);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleOpenDetails = (id) => {
-        const clothing = clothingItems.find((item) => item.cloId === id);
-        setSelectedClothing(clothing);
+    const handleTabChange = (event, newValue) => {
+        setActiveTab(newValue);
+        localStorage.setItem("activeTab", newValue);
     };
 
     return (
-        <Box sx={{ padding: "16px", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-            <Typography level="h4">Votre inventaire</Typography>
-            {loading ? (
-                <Typography>Chargement...</Typography>
-            ) : (
-                <Box sx={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
-                    {clothingItems.map((item) => (
-                        <ClothingItem
-                            key={item.cloId}
-                            clothingId={item.cloId}
-                            title={item.cloLib}
-                            imageSrc={item.cloImageUrl}
-                            onClick={handleOpenDetails}
-                        />
-                    ))}
-                </Box>
-            )}
-            <SpeedDial
-                ariaLabel="Actions d'inventaire"
-                sx={{
-                    position: "fixed", // Fixé par rapport à l'écran
-                    alignSelf: "flex-end", // Aligné à droite
-                    transform: "translateY(-50%)", // Pour aligner parfaitement au centre vertical
-                    bottom: "40px",
-                    zIndex: 1100 // Assurez-vous qu'il reste visible au-dessus des autres éléments
-                }}
-                icon={<AddIcon />}
-                onClick={() => setOpenAddModal(true)}
-            />
-            <AddClothingModal
-                open={openAddModal}
-                onClose={() => setOpenAddModal(false)}
-                onClothingAdded={fetchClothingItems}
-            />
-            {selectedClothing && (
-                <ClothingDetailsModal
-                open={!!selectedClothing}
-                onClose={() => setSelectedClothing(null)}
-                clothing={selectedClothing}
-                onRefresh={() => {
-                    // Rafraîchit uniquement les détails du vêtement sélectionné
-                    fetchClothingItems(); // Facultatif : si la liste doit aussi être mise à jour
-                }}
-            />
+        <div className="inventory-container">
+            <Tabs
+                value={activeTab}
+                onChange={handleTabChange}
+                className="inventory-tabs"
+                sx={{ bgcolor: 'transparent' }}
+            >
+                <TabList
+                    className="inventory-tab-list"
+                    disableUnderline
+                    sx={{
+                        display: 'flex', // Active le modèle flexible
+                        width: 'fit-content', // Ajuste la largeur à la taille du contenu
+                        margin: 'auto', // Centre la liste des onglets
+                        justifyContent: 'center', // Centre horizontalement les onglets
+                        alignItems: 'center', // Centre verticalement les onglets
+                        p: 1,
+                        gap: 0.5,
+                        borderRadius: 'xl',
+                        boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)', // Ombre pour la liste entière
+                        [`& .${tabClasses.root}[aria-selected="true"]`]: {
+                            boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.3)', // Ombre forte pour l'onglet actif
+                            borderRadius: 'lg', // Coins arrondis pour l'onglet actif
+                        },
+                        [`& .${tabClasses.root}[aria-selected="false"]`]: {
+                            boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)', // Ombre plus légère pour les onglets inactifs
+                            transition: 'box-shadow 0.3s',
+                            '&:hover': {
+                                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)', // Ombre renforcée au survol
+                            },
+                        },
+                    }}
+                >
+                    <Tab className="inventory-tab" disableIndicator>Vêtements</Tab>
+                    <Tab className="inventory-tab" disableIndicator>Tenues</Tab>
+                </TabList>
 
-            )}
-        </Box>
+                <TabPanel value={0}>
+                    <ClothingInventory />
+                </TabPanel>
+                <TabPanel value={1}>
+                    <OutfitInventory />
+                </TabPanel>
+            </Tabs>
+        </div>
     );
 };
 

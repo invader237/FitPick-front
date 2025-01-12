@@ -132,6 +132,36 @@ export const getClothingById = async (clothingId) => {
 };
 
 /**
+ * Fetch all outfits for the connected user.
+ * @returns {Promise} Resolves to a list of outfits.
+ */
+export const getAllOutfits = async () => {
+    try {
+        const response = await axiosInstance.get('/api/outfits/my-items');
+        return response.data || [];
+    } catch (error) {
+        console.error("Error fetching outfits:", error);
+        throw error;
+    }
+};
+
+/**
+ * Fetch outfit details by ID.
+ * @param {number} outfitId - The ID of the outfit.
+ * @returns {Promise} Resolves to the outfit details (including clothing items).
+ */
+export const getOutfitById = async (outfitId) => {
+    try {
+        const response = await axiosInstance.get(`/api/outfits/${outfitId}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching outfit details:", error);
+
+        throw error;
+    }
+};
+
+/**
  * Fetch user profile by email.
  * @param {string} email - The email of the user.
  * @returns {Promise} Resolves to the user profile.
@@ -142,6 +172,21 @@ export const getProfile = async (email) => {
         return response.data;
     } catch (error) {
         console.error("Error fetching user profile:", error);
+        throw error;
+    }
+};
+
+/**
+ * Add a new outfit.
+ * @param {Object} outfit - Outfit data (name, clothing list, etc.).
+ * @returns {Promise} Resolves to the created outfit.
+ */
+export const addOutfit = async (outfit) => {
+    try {
+        const response = await axiosInstance.post("/api/outfits", outfit);
+        return response.data;
+    } catch (error) {
+        console.error("Error adding outfit:", error);
         throw error;
     }
 };
@@ -161,6 +206,41 @@ export const updateProfile = async (email, updatedProfile) => {
         throw error;
     }
 };
+
+/**
+<<<<<<< HEAD
+ * Delete an outfit item.
+ * @param {number} outfitId - The ID of the outfit to delete.
+ * @returns {Promise} Resolves to a success message.
+ */
+export const deleteOutfit = async (outfitId) => {
+    try {
+        const response = await axiosInstance.delete(`/api/outfits/${outfitId}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error deleting outfit item:", error);
+        throw error;
+    }
+};
+
+/**
+ * Updates an outfit with the given data.
+ *
+ * @param {string} outfitId - The ID of the outfit to update.
+ * @param {Object} updatedData - The data to update the outfit with.
+ * @returns {Promise<Object>} The updated outfit data.
+ */
+export const updateOutfit = async (id, outfit) => {
+    try {
+        const response = await axiosInstance.put(`/api/outfits/${id}/update`, outfit);
+        return response.data;
+    } catch (error) {
+        console.error("Error updating outfit:", error);
+        throw error;
+    }
+};
+
+export { getClothingItems as getAllClothingItems };
 
 /**
  * Update user avatar.
