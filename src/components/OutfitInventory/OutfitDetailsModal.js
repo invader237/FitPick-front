@@ -1,59 +1,217 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React, { useState, useEffect } from "react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
-import Typography from "@mui/joy/Typography";
+import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import Card from "@mui/material/Card";
+import AspectRatio from "@mui/joy/AspectRatio";
 import Chip from "@mui/material/Chip";
-import Stack from "@mui/material/Stack";
+import ConfirmationModal from "./ConfirmationModal";
+import { getOutfitById, deleteOutfit } from "../../utils/api";
 
+const OutfitDetailsModal = ({ open, onClose, outfitId, onRefresh }) => {
+    const [outfitDetails, setOutfitDetails] = useState(null);
+    const [openConfirmModal, setOpenConfirmModal] = useState(false);
 
-const OutfitDetailsModal = ({ open, onClose, outfit, onEdit, onDelete }) => {
+    useEffect(() => {
+        if (outfitId) {
+            fetchOutfitDetails();
+        }
+    }, [outfitId]);
+
+    const fetchOutfitDetails = async () => {
+        try {
+            const details = await getOutfitById(outfitId);
+            console.log("Outfit details fetched:", details);
+            setOutfitDetails(details);
+        } catch (err) {
+            console.error("Failed to fetch outfit details:", err);
+        }
+    };
+
+    const handleDelete = async () => {
+        try {
+            await deleteOutfit(outfitId);
+            onClose();
+            if (typeof onRefresh === "function") {
+                console.log("Appel de la fonction onRefresh pour mettre à jour la bibliothèque.");
+                onRefresh();
+            } else {
+                console.warn("La fonction onRefresh n'est pas définie ou n'est pas une fonction.");
+            }
+        } catch (err) {
+            console.error("Failed to delete outfit:", err);
+        }
+    };
+
+    if (!outfitDetails) {
+        return null;
+    }
+
     return (
         <Modal open={open} onClose={onClose}>
             <Box
                 sx={{
                     width: "90%",
-                    maxWidth: 400,
-                    margin: "10% auto",
+                    maxWidth: "600px",
+                    margin: "auto",
+                    marginTop: "5%",
                     backgroundColor: "#fff",
-                    borderRadius: 2,
-                    padding: 3,
-                    boxShadow: "0px 8px 30px rgba(0, 0, 0, 0.3)",
+                    borderRadius: "16px",
+                    boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.2)",
+                    overflow: "hidden",
+                    position: "relative",
                 }}
             >
-                <Typography variant="h5" sx={{ textAlign: "center", mb: 2 }}>
-                    {outfit.fit_lib}
-                </Typography>
-                <Typography variant="subtitle1" sx={{ textAlign: "center", mb: 2 }}>
-                    {/*outfit.clothes.length()*/} vêtements
-                </Typography>
-                <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", mb: 2 }}>
-                    {Array.isArray(outfit.clothes) ? (
-                        outfit.clothes.map((clothing, index) => (
-                            <Chip label={clothing.cloLib} key={index} />
-                        ))
-                    ) : (
-                        <Typography variant="body2">Aucun vêtement disponible</Typography>
-                    )}
-                </Stack>
-                <Button variant="contained" fullWidth onClick={onEdit} sx={{ mb: 2 }}>
-                    Modifier
-                </Button>
-                <Button variant="outlined" color="error" fullWidth onClick={onDelete}>
-                    Supprimer
-                </Button>
+                {/* Contenu principal */}
+                <Card sx={{ borderRadius: "16px", overflow: "hidden", position: "relative", paddingTop: "32px" }}>
+                    <IconButton
+                        aria-label="Fermer"
+                        onClick={onClose}
+                        sx={{
+                            position: "absolute",
+                            right: "16px",
+                            top: "8px",
+                            backgroundColor: "rgba(255, 255, 255, 0.8)",
+                            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
+                            "&:hover": { backgroundColor: "#fff" },
+                        }}
+                    >
+                        <CloseRoundedIcon />
+                    </IconButton>
+                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: "16px", justifyContent: "center", padding: "16px" }}>
+                        {outfitDetails.clothingList.map((clothing) => (
+                            <Card
+                                key={clothing.cloId}
+                                sx={{
+                                    borderRadius: "8px",
+                                    overflow: "hidden",
+                                    position: "relative",
+                                    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+                                    width: "45%",
+                                    cursor: "pointer",
+                                }}
+                            >
+                                <AspectRatio ratio="1">
+                                    <Box
+                                        sx={{
+                                            position: "relative",
+                                            width: "100%",
+                                            height: "100%",
+                                            "&:hover .overlay": {
+                                                opacity: 1,
+                                            },
+                                        }}
+                                    >
+                                        <img
+                                            src={clothing.cloImageUrl}
+                                            alt={clothing.cloLib}
+                                            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                        />
+                                        <Box
+                                            className="overlay"
+                                            sx={{
+                                                position: "absolute",
+                                                top: 0,
+                                                left: 0,
+                                                right: 0,
+                                                bottom: 0,
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                                backgroundColor: "rgba(255, 255, 255, 0.8)",
+                                                opacity: 0,
+                                                transition: "opacity 0.3s ease-in-out",
+                                            }}
+                                        >
+                                            <Typography
+                                                variant="body2"
+                                                sx={{ fontWeight: "bold", color: "black", marginBottom: "8px" }}
+                                            >
+                                                {clothing.cloLib}
+                                            </Typography>
+                                            <Box sx={{ display: "flex", gap: "4px", flexWrap: "wrap", justifyContent: "center" }}>
+                                                {clothing.tags.map((tag) => (
+                                                    <Chip
+                                                        key={tag.tagId}
+                                                        label={tag.tagLib}
+                                                        color="primary"
+                                                        variant="outlined"
+                                                        sx={{
+                                                            fontWeight: "bold",
+                                                            padding: "4px 8px",
+                                                        }}
+                                                    />
+                                                ))}
+                                            </Box>
+                                        </Box>
+                                    </Box>
+                                </AspectRatio>
+                            </Card>
+                        ))}
+                    </Box>
+                    <Typography
+                        variant="h6"
+                        sx={{
+                            fontWeight: "bold",
+                            textAlign: "center",
+                            margin: "16px 0",
+                            color: "#333",
+                        }}
+                    >
+                        {outfitDetails.name}
+                    </Typography>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: "space-around",
+                            padding: "16px",
+                            borderTop: "1px solid #eee",
+                            backgroundColor: "#f9f9f9",
+                        }}
+                    >
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            sx={{
+                                textTransform: "none",
+                                padding: "8px 16px",
+                                borderRadius: "8px",
+                                fontWeight: "bold",
+                            }}
+                        >
+                            Modifier
+                        </Button>
+                        <Button
+                            variant="contained"
+                            color="error"
+                            onClick={() => setOpenConfirmModal(true)}
+                            sx={{
+                                textTransform: "none",
+                                padding: "8px 16px",
+                                borderRadius: "8px",
+                                fontWeight: "bold",
+                            }}
+                        >
+                            Supprimer
+                        </Button>
+                    </Box>
+                </Card>
+                <ConfirmationModal
+                    open={openConfirmModal}
+                    onClose={() => setOpenConfirmModal(false)}
+                    onConfirm={handleDelete}
+                    title="Confirmer la suppression"
+                    message="Êtes-vous sûr de vouloir supprimer cette tenue ? Cette action est irréversible."
+                    confirmText="Supprimer"
+                    cancelText="Annuler"
+                />
             </Box>
         </Modal>
     );
-};
-
-OutfitDetailsModal.propTypes = {
-    open: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
-    outfit: PropTypes.object.isRequired,
-    onEdit: PropTypes.func.isRequired,
-    onDelete: PropTypes.func.isRequired,
 };
 
 export default OutfitDetailsModal;
