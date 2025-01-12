@@ -12,7 +12,7 @@ import CardMedia from "@mui/material/CardMedia";
 import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 import { deleteClothing, getClothingTags } from "../../utils/api";
-import ConfirmationModal from "./ConfirmationModal";
+import ConfirmationModal from "../Inventory/ConfirmationModal";
 import EditClothingModal from "./EditClothingModal";
 
 const ClothingDetailsModal = ({ open, onClose, clothing, onRefresh }) => {
@@ -32,7 +32,6 @@ const ClothingDetailsModal = ({ open, onClose, clothing, onRefresh }) => {
                 console.log("Récupération des tags pour le vêtement ID :", clothing.cloId);
                 setLoadingTags(true);
                 const fetchedTags = await getClothingTags(clothing.cloId);
-                console.log("Tags récupérés :", fetchedTags);
                 setTags(fetchedTags);
             } catch (err) {
                 console.error("Erreur lors de la récupération des tags :", err);
@@ -216,7 +215,7 @@ const ClothingDetailsModal = ({ open, onClose, clothing, onRefresh }) => {
                     onClose={() => setOpenDelete(false)}
                     onConfirm={handleDelete}
                     title="Confirmer la suppression"
-                    message="Êtes-vous sûr de vouloir supprimer cet article ?"
+                    message="Êtes-vous sûr de vouloir supprimer ce vetement?"
                     confirmText="Supprimer"
                     cancelText="Annuler"
                 />
