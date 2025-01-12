@@ -1,4 +1,3 @@
-// ClothingItem.js
 import React from "react";
 import PropTypes from "prop-types";
 import Card from "@mui/joy/Card";
@@ -14,14 +13,14 @@ const InventoryItem = ({
     onClick,
     defaultImage = "/assets/default-clothing.png",
     type,
-    clothingNames = [], // Pour les noms des vêtements qui composent une tenue
+    clothingNames = [], // Noms des vêtements pour une tenue
 }) => {
     return (
         <Card
             variant="outlined"
             onClick={() => onClick(itemId)}
             sx={{
-                width: "150px",
+                width: type === "clothing" ? "150px" : "300px",
                 margin: "4px",
                 display: "flex",
                 flexDirection: "column",
@@ -34,49 +33,66 @@ const InventoryItem = ({
                     {type === "clothing" ? (
                         // Affichage d'un vêtement
                         <img
-                            src={imageSrc || defaultImage}
+                            src={typeof imageSrc === "string" ? imageSrc : defaultImage}
                             alt={title}
                             onError={(e) => (e.target.src = defaultImage)}
-                            style={{ width: "100%", objectFit: "cover" }}
+                            style={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "contain", // Ajuste pour rendre toute l'image visible
+                            }}
                         />
                     ) : (
                         // Affichage d'une tenue
-                        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "2px" }}>
-                            {
-                                <img
-                                    src={imageSrc || defaultImage}
-                                    alt={title}
-                                    onError={(e) => (e.target.src = defaultImage)}
-                                    style={{ width: "100%", objectFit: "cover" }}
-                                />
-                            }
-                            {/*Array(4).fill().map((_, index) => (
-                                <div key={index} style={{ position: "relative" }}>
+                        <div
+                            style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                flexWrap: "wrap",
+                                gap: "0",
+                                justifyContent: imageSrc.length === 2 ? "center" : "space-between", 
+                                alignItems: "center",
+                                width: "100%",
+                                height: "100%",
+                            }}
+                        >
+                            {(Array.isArray(imageSrc) ? imageSrc : []).slice(0, 4).map((src, index) => (
+                                <div
+                                    key={index}
+                                    style={{
+                                        flex: imageSrc.length === 2 ? "0 0 45%" : "1 1 50%", 
+                                        boxSizing: "border-box", 
+                                        margin: "0",
+                                        height: "50%", 
+                                    }}
+                                >
                                     <img
-                                        src={imageSrc[index] || defaultImage}
+                                        src={src || defaultImage}
                                         alt={clothingNames[index] || title}
                                         onError={(e) => (e.target.src = defaultImage)}
-                                        style={{ width: "100%", objectFit: "cover" }}
+                                        style={{
+                                            width: "100%",
+                                            height: "100%",
+                                            objectFit: "cover", 
+                                        }}
                                     />
-                                    {clothingNames[index] && (
-                                        <Typography
-                                            variant="caption"
-                                            sx={{
-                                                position: "absolute",
-                                                bottom: 0,
-                                                left: 0,
-                                                right: 0,
-                                                backgroundColor: "rgba(0, 0, 0, 0.5)",
-                                                color: "white",
-                                                textAlign: "center",
-                                                fontSize: "0.7em",
-                                            }}
-                                        >
-                                            {clothingNames[index]}
-                                        </Typography>
-                                    )}
                                 </div>
-                            ))*/}
+                            ))}
+
+                            {/* Remplissage des espaces vides si moins de 4 images */}
+                            {Array.from({
+                                length: 4 - (imageSrc?.length || 0),
+                            }).map((_, idx) => (
+                                <div
+                                    key={`empty-${idx}`}
+                                    style={{
+                                        flex: "1 1 50%",
+                                        backgroundColor: "#f0f0f0",
+                                        margin: "0",
+                                        height: "50%", // Ajuste la hauteur pour correspondre aux images existantes
+                                    }}
+                                ></div>
+                            ))}
                         </div>
                     )}
                 </AspectRatio>

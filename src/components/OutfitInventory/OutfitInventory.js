@@ -35,17 +35,18 @@ const OutfitInventory = () => {
         if (window.confirm("Are you sure you want to delete this outfit?")) {
             try {
                 await deleteOutfit(outfitId);
-                setOutfits((prevOutfits) => prevOutfits.filter((outfit) => outfit.fit_id !== outfitId));
+                setOutfits((prevOutfits) => prevOutfits.filter((outfit) => outfit.id !== outfitId));
                 alert("Outfit deleted successfully.");
             } catch (err) {
                 console.error("Error deleting outfit:", err);
                 alert("Failed to delete outfit. Please try again.");
             }
+            fetchOutfits();
         }
     };
 
     const handleOpenDetails = (id) => {
-        const outfit = outfits.find((o) => o.fit_id === id);
+        const outfit = outfits.find((o) => o.id === id);
         setSelectedOutfit(outfit);
     };
 
@@ -57,13 +58,13 @@ const OutfitInventory = () => {
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
                     {outfits.map((item) => (
                         <InventoryItem
-                            key={item.fit_id}
-                            itemId={item.fit_id}
-                            title={item.fit_lib}
-                            imageSrc={"https://mon-projet-bucket.s3.eu-north-1.amazonaws.com/311737e2-d5ec-452f-a848-6d50c40eb9ba_t-shirt.d8302ac14cf91e917119.png"}
+                            key={item.id} 
+                            itemId={item.id} 
+                            title={item.name} 
+                            imageSrc={item.cloImageUrlList} 
                             onClick={handleOpenDetails}
                             type="outfit"
-                            /*clothingNames={item.clothing.map((c) => c.clo_lib)}*/
+                            defaultImage="https://mon-projet-bucket.s3.eu-north-1.amazonaws.com/311737e2-d5ec-452f-a848-6d50c40eb9ba_t-shirt.d8302ac14cf91e917119.png"
                         />
                     ))}
                 </Box>
@@ -87,9 +88,9 @@ const OutfitInventory = () => {
                 <OutfitDetailsModal
                     open={!!selectedOutfit}
                     onClose={() => setSelectedOutfit(null)}
-                    outfitId={selectedOutfit.fit_id}
+                    outfitId={selectedOutfit.id}
                     onEdit={fetchOutfits}
-                    onDelete={fetchOutfits}
+                    onDelete={handleDeleteOutfit}
                     onRefresh={fetchOutfits}
                 />
             )}
