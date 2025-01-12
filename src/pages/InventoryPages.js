@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Tabs, Tab, TabList, TabPanel } from "@mui/joy";
 import ClothingInventory from "../components/ClothingInventory/ClothingInventory";
 import OutfitInventory from "../components/OutfitInventory/OutfitInventory";
-import "../styles/InventoryPage/InventoryTabs.css"; // Importation du fichier CSS
 import { tabClasses } from '@mui/joy/Tab';
 
 const InventoryPages = () => {
