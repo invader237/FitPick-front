@@ -156,6 +156,22 @@ export const getOutfitById = async (outfitId) => {
         return response.data;
     } catch (error) {
         console.error("Error fetching outfit details:", error);
+
+        throw error;
+    }
+};
+
+/**
+ * Fetch user profile by email.
+ * @param {string} email - The email of the user.
+ * @returns {Promise} Resolves to the user profile.
+ */
+export const getProfile = async (email) => {
+    try {
+        const response = await axiosInstance.get(`/api/profile/${email}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching user profile:", error);
         throw error;
     }
 };
@@ -176,6 +192,23 @@ export const addOutfit = async (outfit) => {
 };
 
 /**
+ * Update user profile.
+ * @param {string} email - The email of the user to update.
+ * @param {Object} updatedProfile - Updated profile data.
+ * @returns {Promise} Resolves to the updated user profile.
+ */
+export const updateProfile = async (email, updatedProfile) => {
+    try {
+        const response = await axiosInstance.put(`/api/profile/${email}/update`, updatedProfile);
+        return response.data;
+    } catch (error) {
+        console.error("Error updating user profile:", error);
+        throw error;
+    }
+};
+
+/**
+<<<<<<< HEAD
  * Delete an outfit item.
  * @param {number} outfitId - The ID of the outfit to delete.
  * @returns {Promise} Resolves to a success message.
