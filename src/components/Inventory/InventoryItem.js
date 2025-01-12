@@ -20,20 +20,25 @@ const InventoryItem = ({
             variant="outlined"
             onClick={() => onClick(itemId)}
             sx={{
-                flex: type === "clothing" ? "1 1 calc(20% - 16px)" : "1 1 calc(28% - 16px)", 
+                flex: type === "clothing" ? "1 1 calc(20% - 16px)" : "1 1 calc(28% - 16px)",
                 margin: "8px",
                 display: "flex",
                 flexDirection: "column",
                 cursor: "pointer",
                 maxWidth: "calc(28% - 16px)",
-                minHeight: "250px", // Hauteur minimale pour uniformiser les tailles
-                justifyContent: "space-between", // Pour remplir verticalement
-                "@media (max-width: 900px)": {
-                    flex: "1 1 calc(50% - 16px)", // 2 items par ligne
-                    maxWidth: "calc(50% - 16px)",
+                minHeight: "250px", 
+                maxHeight: "765px",
+                justifyContent: "space-between", 
+                "@media (max-width: 901px)": {
+                    flex: type === "clothing" ? "1 1 calc(20% - 16px)" : "1 1 calc(27% - 16px)", 
+                    maxWidth: type === "clothing" ? "calc(45% - 16px)" : "calc(45% - 16px)",
                 },
-                "@media (max-width: 600px)": {
-                    flex: "1 1 calc(100% - 16px)", // 1 item par ligne
+                "@media (max-width: 801px)": {
+                    flex: type === "clothing" ? "1 1 calc(40% - 16px)" : "1 1 calc(27% - 16px)",
+                    maxWidth: type === "clothing" ? "calc(50% - 16px)" : "calc(45% - 16px)",
+                },
+                "@media (max-width: 601px)": {
+                    flex: "1 1 calc(100% - 16px)", 
                     maxWidth: "calc(100% - 16px)",
                 },
                 "&:hover": { boxShadow: 4 },

@@ -40,7 +40,14 @@ const ClothingInventory = () => {
             {loading ? (
                 <Typography>Chargement...</Typography>
             ) : (
-                <Box sx={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
+                <Box sx={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: "16px",
+                    justifyContent: "space-between", 
+                    alignItems: "stretch",
+                    width: "100%",
+                }}>
                     {clothingItems.map((item) => (
                         <InventoryItem
                             key={item.cloId}

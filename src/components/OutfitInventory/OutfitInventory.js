@@ -53,9 +53,11 @@ const OutfitInventory = () => {
         <Box
             sx={{
                 display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                padding: "16px",
+                flexWrap: "wrap",
+                gap: "16px",
+                justifyContent: "space-between",
+                alignItems: "stretch",
+                width: "100%",
             }}
         >
             {loading ? (
@@ -66,8 +68,8 @@ const OutfitInventory = () => {
                         display: "flex",
                         flexWrap: "wrap",
                         gap: "16px",
-                        justifyContent: "left", 
-                        alignItems: "flex-start", 
+                        justifyContent: "left",
+                        alignItems: "flex-start",
                         width: "100%",
                         maxWidth: "1200px",
                         "@media (max-width: 768px)": {
