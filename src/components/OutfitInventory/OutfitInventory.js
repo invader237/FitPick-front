@@ -66,15 +66,6 @@ const OutfitInventory = () => {
                             /*clothingNames={item.clothing.map((c) => c.clo_lib)}*/
                         />
                     ))}
-                        {/*
-
-                        <OutfitItem
-                            key={item.fit_id}
-                            outfit={item}
-                            onClick={handleOpenDetails}
-                            onDelete={() => handleDeleteOutfit(item.fit_id)}
-                        />
-                    ))} */}
                 </Box>
             )}
             <SpeedDial
