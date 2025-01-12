@@ -18,6 +18,7 @@ import EmailIcon from "@mui/icons-material/Email";
 import LockIcon from "@mui/icons-material/Lock";
 import CircularProgress from "@mui/material/CircularProgress";
 import LoginPageStyles from "../../styles/authentification/LoginPageStyles";
+import { baseURL } from "../../config/baseUrl";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -40,7 +41,7 @@ const LoginPage = () => {
       const hashedPassword = CryptoJS.SHA256(password).toString();
 
       const response = await axios.post(
-        "http://localhost:8080/api/auth/login",
+        baseURL + "/api/auth/login",
         { email, password: hashedPassword }, // Envoyer le mot de passe hashé
         { headers: { "Content-Type": "application/json" } }
       );
@@ -48,7 +49,7 @@ const LoginPage = () => {
       localStorage.setItem("authToken", response.data.token);
       setSuccess("Connexion réussie ! Redirection...");
       setShowAlert(true);
-      setTimeout(() => navigate("/dashboard"), 2000);
+      setTimeout(() => navigate("/"), 2000);
     } catch (err) {
       setError("Email ou mot de passe incorrect.");
       setShowAlert(true);

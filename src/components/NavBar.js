@@ -12,11 +12,11 @@ const Navbar = () => {
     const isExtraSmallScreen = useMediaQuery('(max-width:420px)');
     const navigate = useNavigate();
 
-    const handleNavigation = (event, newValue) => {
-        setValue(newValue);
-        const routes = ['/', '/', '/inventory', '/dashboard'];
-        navigate(routes[newValue]);
-    };
+  const handleNavigation = (event, newValue) => {
+    setValue(newValue);
+    const routes = ['/', '/', '/inventory', '/profile'];
+    navigate(routes[newValue]);
+  };
 
     const navbarItemStyle = {
         display: 'flex',

@@ -27,7 +27,6 @@ const InventoryPages = () => {
                 className="inventory-tabs"
                 sx={{ bgcolor: 'transparent' }}
             >
-
                 <TabList
                     className="inventory-tab-list"
                     disableUnderline
