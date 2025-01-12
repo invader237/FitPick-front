@@ -5,18 +5,23 @@ import {
     Typography,
     Button,
     TextField,
+    List,
+    ListItem,
+    ListItemAvatar,
+    Avatar,
+    ListItemText,
+    IconButton,
+    Chip,
     Grid,
-    Card,
-    CardActionArea,
-    CardMedia,
-    CardContent,
 } from "@mui/material";
-import { addOutfit, getClothingItems } from "../../utils/api";
+import CloseIcon from "@mui/icons-material/Close";
+import { getClothingItems, addOutfit } from "../../utils/api";
 
 const AddOutfitModal = ({ open, onClose, onOutfitAdded }) => {
     const [name, setName] = useState("");
-    const [selectedClothing, setSelectedClothing] = useState([]); // Multi-selection support
-    const [availableClothing, setAvailableClothing] = useState([]); // List of all clothing items
+    const [searchQuery, setSearchQuery] = useState("");
+    const [selectedClothing, setSelectedClothing] = useState([]);
+    const [availableClothing, setAvailableClothing] = useState([]);
     const [error, setError] = useState(null);
 
     useEffect(() => {
@@ -24,94 +29,109 @@ const AddOutfitModal = ({ open, onClose, onOutfitAdded }) => {
             const fetchClothingItems = async () => {
                 try {
                     const items = await getClothingItems();
-                    console.log("Fetched clothing items:", items); // Log pour débogage
-                    setAvailableClothing(items || []);
+                    setAvailableClothing(items);
                 } catch (err) {
-                    console.error("Error fetching clothing items:", err);
+                    console.error("Erreur lors de la récupération des vêtements:", err);
                 }
             };
             fetchClothingItems();
         }
     }, [open]);
 
-
-
-    // Handle clothing selection (multi-select with a maximum of 4 items)
     const handleSelectClothing = (clothing) => {
+        if (selectedClothing.length >= 4) {
+            setError("Vous ne pouvez sélectionner que jusqu'à 4 vêtements.");
+            return;
+        }
+
         setSelectedClothing((prevSelected) => {
             const isSelected = prevSelected.some((item) => item.cloId === clothing.cloId);
 
-            const updatedSelection = isSelected
-                ? prevSelected.filter((item) => item.cloId !== clothing.cloId)
-                : [...prevSelected, clothing];
+            if (!isSelected) {
+                setAvailableClothing((prevAvailable) =>
+                    prevAvailable.filter((item) => item.cloId !== clothing.cloId)
+                );
+                return [...prevSelected, clothing];
+            }
 
-            console.log("Updated selection:", updatedSelection); // Log pour déboguer
-            return updatedSelection;
+            return prevSelected;
         });
     };
 
-    // Handle form submission
+    const handleRemoveClothing = (cloId) => {
+        setSelectedClothing((prevSelected) => {
+            const removedItem = prevSelected.find((item) => item.cloId === cloId);
+
+            if (removedItem) {
+                setAvailableClothing((prevAvailable) => [...prevAvailable, removedItem]);
+            }
+
+            return prevSelected.filter((item) => item.cloId !== cloId);
+        });
+        setError(null);
+    };
+
     const handleSubmit = async () => {
         if (!name || selectedClothing.length > 4 || selectedClothing.length < 2) {
-            setError("You must select exactly 4 clothing items and provide a name.");
+            setError("Vous devez sélectionner entre 2 et 4 vêtements et fournir un nom.");
             return;
         }
 
         try {
             const outfitData = {
                 name: name.trim(),
-                clothingList: selectedClothing.map((item) => item.cloId), // Assurez-vous que cloId existe
+                clothingList: selectedClothing.map((item) => item.cloId),
             };
-
-            console.log("Payload being sent:", outfitData); // Vérifiez la charge utile
 
             await addOutfit(outfitData);
             onOutfitAdded();
             onClose();
         } catch (err) {
-            console.error("Error adding outfit:", err.response?.data || err.message);
-            setError("An error occurred while adding the outfit.");
+            console.error("Erreur lors de l'ajout de la tenue:", err);
+            setError("Une erreur s'est produite lors de l'ajout de la tenue.");
         }
     };
 
+    const filteredClothing = availableClothing.filter((item) =>
+        item.cloLib.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     return (
         <Modal open={open} onClose={onClose}>
             <Box
                 sx={{
                     width: "85%",
-                    maxWidth: "450px",
+                    maxWidth: "700px",
                     margin: "auto",
-                    marginTop: "5%",
+                    marginTop: "1.5%",
                     backgroundColor: "#fefefe",
                     borderRadius: "16px",
                     boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.2)",
                     padding: "20px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 2,
                 }}
             >
                 <Typography
                     variant="h5"
                     sx={{
                         textAlign: "center",
-                        marginBottom: 3,
                         fontWeight: "700",
-                        fontSize: "20px",
                         color: "#007BFF",
                     }}
                 >
-                    Add an Outfit
+                    Ajouter une tenue
                 </Typography>
 
                 {error && (
                     <Typography
                         color="error"
                         sx={{
-                            marginBottom: 2,
                             textAlign: "center",
-                            fontSize: "14px",
                             backgroundColor: "#ffe6e6",
-                            color: "#d32f2f",
-                            padding: "10px",
+                            color: "#000",
+                            padding: 1,
                             borderRadius: "8px",
                         }}
                     >
@@ -121,90 +141,149 @@ const AddOutfitModal = ({ open, onClose, onOutfitAdded }) => {
 
                 <TextField
                     fullWidth
-                    label="Outfit Name"
+                    label="Nom de la tenue"
                     variant="outlined"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     sx={{
-                        marginBottom: 3,
                         "& .MuiOutlinedInput-root": {
                             borderRadius: "8px",
                         },
                     }}
                 />
 
-                <Typography
-                    variant="subtitle1"
-                    sx={{
-                        marginTop: 2,
-                        marginBottom: 2,
-                        fontWeight: "bold",
-                        color: "#555",
-                    }}
-                >
-                    Select Clothing Items (4 max):
-                </Typography>
-
-                <Box
-                    sx={{
-                        maxHeight: "300px", // Définir une hauteur maximale pour la liste
-                        overflowY: "auto",  // Activer le défilement vertical
-                        paddingRight: "8px", // Ajouter un padding pour éviter la superposition avec la barre de défilement
-                    }}
-                >
-                    <Grid container spacing={2}>
-                        {availableClothing.map((clothing) => (
-                            <Grid item xs={6} key={clothing.cloId}> {/* Propriété key ajoutée */}
-                                <Card
+                {selectedClothing.length > 0 && (
+                    <Grid container spacing={2} sx={{ marginBottom: 3 }}>
+                        {selectedClothing.map((clothing) => (
+                            <Grid item xs={6} sm={4} md={3} key={clothing.cloId}>
+                                <Box
                                     sx={{
-                                        cursor: "pointer",
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "center",
+                                        backgroundColor: "#f9f9f9",
                                         borderRadius: "12px",
-                                        boxShadow: selectedClothing.includes(clothing)
-                                            ? "0 0 10px #007BFF"
-                                            : "none",
-                                        border: selectedClothing.includes(clothing)
-                                            ? "2px solid #007BFF"
-                                            : "1px solid #ddd",
-                                        transition: "transform 0.3s ease-in-out",
-                                        "&:hover": {
-                                            transform: "scale(1.05)",
+                                        padding: 1,
+                                        boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
+                                        position: "relative",
+                                        "&:hover .tags-overlay": {
+                                            opacity: 1,
                                         },
                                     }}
-                                    onClick={() => handleSelectClothing(clothing)}
                                 >
-                                    <CardActionArea>
-                                        <CardMedia
-                                            component="img"
-                                            height="100"
-                                            image={clothing.cloImageUrl || "/placeholder.png"} // Image par défaut
-                                            alt={clothing.cloLib || "Unnamed Clothing"} // Texte alternatif par défaut
-                                            sx={{
-                                                objectFit: "cover",
-                                                borderRadius: "12px",
-                                            }}
-                                        />
-                                        <CardContent>
-                                            <Typography
-                                                textAlign="center"
-                                                fontSize="14px"
-                                                sx={{ fontWeight: "bold" }}
-                                            >
-                                                {clothing.cloLib || "Unnamed Clothing"}
-                                            </Typography>
-                                        </CardContent>
-                                    </CardActionArea>
-                                </Card>
+                                    <Box
+                                        component="img"
+                                        src={clothing.cloImageUrl || "/placeholder.png"}
+                                        alt={clothing.cloLib}
+                                        sx={{
+                                            width: 80,
+                                            height: 80,
+                                            borderRadius: "12px",
+                                            marginBottom: 1,
+                                            objectFit: "cover",
+                                        }}
+                                    />
+                                    <Typography
+                                        variant="body2"
+                                        sx={{ textAlign: "center", marginBottom: 1 }}
+                                    >
+                                        {clothing.cloLib}
+                                    </Typography>
+                                    <Box
+                                        className="tags-overlay"
+                                        sx={{
+                                            position: "absolute",
+                                            top: 0,
+                                            left: 0,
+                                            right: 0,
+                                            bottom: 0,
+                                            backgroundColor: "rgba(255, 255, 255, 0.8)",
+                                            color: "#007BFF",
+                                            borderRadius: "12px",
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            opacity: 0,
+                                            transition: "opacity 0.3s",
+                                        }}
+                                    >
+                                        {clothing.tags?.map((tag) => (
+                                            <Chip
+                                                key={tag.tagId}
+                                                label={tag.tagLib}
+                                                size="small"
+                                                variant="outlined"
+                                                sx={{
+                                                    color: "#007BFF",
+                                                    borderColor: "#007BFF",
+                                                    backgroundColor: "transparent",
+                                                    margin: 0.5,
+                                                }}
+                                            />
+                                        ))}
+                                    </Box>
+                                    <IconButton
+                                        onClick={() => handleRemoveClothing(clothing.cloId)}
+                                        size="small"
+                                        sx={{ marginTop: 1, color: "#d32f2f" }}
+                                    >
+                                        <CloseIcon />
+                                    </IconButton>
+                                </Box>
                             </Grid>
                         ))}
                     </Grid>
-                </Box>
+                )}
 
+                <Typography
+                    variant="subtitle1"
+                    sx={{ fontWeight: "bold", color: "#555" }}
+                >
+                    Ajouter des vêtements :
+                </Typography>
+                <TextField
+                    fullWidth
+                    label="Rechercher un vêtement"
+                    variant="outlined"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    sx={{
+                        "& .MuiOutlinedInput-root": {
+                            borderRadius: "8px",
+                        },
+                    }}
+                />
+                <List sx={{ maxHeight: "300px", overflowY: "auto" }}>
+                    {filteredClothing.map((clothing) => (
+                        <ListItem
+                            key={clothing.cloId}
+                            button
+                            onClick={() => handleSelectClothing(clothing)}
+                            sx={{
+                                backgroundColor: "#f9f9f9",
+                                borderRadius: "8px",
+                                marginBottom: 1,
+                                transition: "background-color 0.3s",
+                                "&:hover": { backgroundColor: "#e3f2fd" },
+                            }}
+                        >
+                            <ListItemAvatar>
+                                <Avatar
+                                    src={clothing.cloImageUrl || "/placeholder.png"}
+                                    alt={clothing.cloLib}
+                                    sx={{ width: 64, height: 64, borderRadius: "12px" }}
+                                />
+                            </ListItemAvatar>
+                            <ListItemText primary={clothing.cloLib} />
+                        </ListItem>
+                    ))}
+                </List>
 
                 <Button
                     fullWidth
                     variant="contained"
                     sx={{
-                        marginTop: 3,
                         borderRadius: "12px",
                         fontWeight: "bold",
                         background: "linear-gradient(90deg, #007BFF, #0056b3)",
@@ -217,7 +296,7 @@ const AddOutfitModal = ({ open, onClose, onOutfitAdded }) => {
                     }}
                     onClick={handleSubmit}
                 >
-                    Add Outfit
+                    Ajouter la tenue
                 </Button>
             </Box>
         </Modal>
