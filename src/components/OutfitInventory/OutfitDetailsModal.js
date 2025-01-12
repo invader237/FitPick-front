@@ -9,11 +9,13 @@ import Card from "@mui/material/Card";
 import AspectRatio from "@mui/joy/AspectRatio";
 import Chip from "@mui/material/Chip";
 import ConfirmationModal from "./ConfirmationModal";
+import EditOutfitModal from "./EditOutfitModal";
 import { getOutfitById, deleteOutfit } from "../../utils/api";
 
 const OutfitDetailsModal = ({ open, onClose, outfitId, onRefresh }) => {
     const [outfitDetails, setOutfitDetails] = useState(null);
     const [openConfirmModal, setOpenConfirmModal] = useState(false);
+    const [openEditModal, setOpenEditModal] = useState(false);
 
     useEffect(() => {
         if (outfitId) {
@@ -24,10 +26,9 @@ const OutfitDetailsModal = ({ open, onClose, outfitId, onRefresh }) => {
     const fetchOutfitDetails = async () => {
         try {
             const details = await getOutfitById(outfitId);
-            console.log("Outfit details fetched:", details);
             setOutfitDetails(details);
         } catch (err) {
-            console.error("Failed to fetch outfit details:", err);
+            console.error("Erreur lors de la récupération des détails de la tenue :", err);
         }
     };
 
@@ -36,13 +37,10 @@ const OutfitDetailsModal = ({ open, onClose, outfitId, onRefresh }) => {
             await deleteOutfit(outfitId);
             onClose();
             if (typeof onRefresh === "function") {
-                console.log("Appel de la fonction onRefresh pour mettre à jour la bibliothèque.");
                 onRefresh();
-            } else {
-                console.warn("La fonction onRefresh n'est pas définie ou n'est pas une fonction.");
             }
         } catch (err) {
-            console.error("Failed to delete outfit:", err);
+            console.error("Erreur lors de la suppression de la tenue :", err);
         }
     };
 
@@ -65,8 +63,14 @@ const OutfitDetailsModal = ({ open, onClose, outfitId, onRefresh }) => {
                     position: "relative",
                 }}
             >
-                {/* Contenu principal */}
-                <Card sx={{ borderRadius: "16px", overflow: "hidden", position: "relative", paddingTop: "32px" }}>
+                <Card
+                    sx={{
+                        borderRadius: "16px",
+                        overflow: "hidden",
+                        position: "relative",
+                        paddingTop: "32px",
+                    }}
+                >
                     <IconButton
                         aria-label="Fermer"
                         onClick={onClose}
@@ -81,7 +85,15 @@ const OutfitDetailsModal = ({ open, onClose, outfitId, onRefresh }) => {
                     >
                         <CloseRoundedIcon />
                     </IconButton>
-                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: "16px", justifyContent: "center", padding: "16px" }}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: "16px",
+                            justifyContent: "center",
+                            padding: "16px",
+                        }}
+                    >
                         {outfitDetails.clothingList.map((clothing) => (
                             <Card
                                 key={clothing.cloId}
@@ -91,7 +103,6 @@ const OutfitDetailsModal = ({ open, onClose, outfitId, onRefresh }) => {
                                     position: "relative",
                                     boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
                                     width: "45%",
-                                    cursor: "pointer",
                                 }}
                             >
                                 <AspectRatio ratio="1">
@@ -106,9 +117,13 @@ const OutfitDetailsModal = ({ open, onClose, outfitId, onRefresh }) => {
                                         }}
                                     >
                                         <img
-                                            src={clothing.cloImageUrl}
+                                            src={clothing.cloImageUrl || "/placeholder.png"}
                                             alt={clothing.cloLib}
-                                            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                            style={{
+                                                width: "100%",
+                                                height: "100%",
+                                                objectFit: "cover",
+                                            }}
                                         />
                                         <Box
                                             className="overlay"
@@ -133,17 +148,21 @@ const OutfitDetailsModal = ({ open, onClose, outfitId, onRefresh }) => {
                                             >
                                                 {clothing.cloLib}
                                             </Typography>
-                                            <Box sx={{ display: "flex", gap: "4px", flexWrap: "wrap", justifyContent: "center" }}>
+                                            <Box
+                                                sx={{
+                                                    display: "flex",
+                                                    gap: "4px",
+                                                    flexWrap: "wrap",
+                                                    justifyContent: "center",
+                                                }}
+                                            >
                                                 {clothing.tags.map((tag) => (
                                                     <Chip
                                                         key={tag.tagId}
                                                         label={tag.tagLib}
                                                         color="primary"
                                                         variant="outlined"
-                                                        sx={{
-                                                            fontWeight: "bold",
-                                                            padding: "4px 8px",
-                                                        }}
+                                                        sx={{ fontWeight: "bold", padding: "4px 8px" }}
                                                     />
                                                 ))}
                                             </Box>
@@ -176,6 +195,7 @@ const OutfitDetailsModal = ({ open, onClose, outfitId, onRefresh }) => {
                         <Button
                             variant="contained"
                             color="primary"
+                            onClick={() => setOpenEditModal(true)}
                             sx={{
                                 textTransform: "none",
                                 padding: "8px 16px",
@@ -200,6 +220,13 @@ const OutfitDetailsModal = ({ open, onClose, outfitId, onRefresh }) => {
                         </Button>
                     </Box>
                 </Card>
+                <EditOutfitModal
+                    open={openEditModal}
+                    onClose={() => setOpenEditModal(false)}
+                    outfitId={outfitId}
+                    onOutfitUpdated={onRefresh}
+                />
+
                 <ConfirmationModal
                     open={openConfirmModal}
                     onClose={() => setOpenConfirmModal(false)}
