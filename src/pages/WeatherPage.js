@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axiosInstance from "../utils/axiosConfig";
+import InventoryItem from "../components/Inventory/InventoryItem";
+import OutfitDetailsModal from "../components/OutfitInventory/OutfitDetailsModal";
 import "../styles/WeatherPage/WeatherPage.css";
 
 const WeatherPage = () => {
   const [weather, setWeather] = useState(null);
+  const [recommendation, setRecommendation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showPopup, setShowPopup] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedOutfit, setSelectedOutfit] = useState(null);
 
   useEffect(() => {
     getUserLocation();
@@ -16,21 +21,19 @@ const WeatherPage = () => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          console.log("Coordonnées GPS :", latitude, longitude);
           getWeatherData(latitude, longitude);
         },
         (err) => {
           console.warn(
-            "Erreur de géolocalisation. Utilisation des coordonnées par défaut :",
+            "Erreur de géolocalisation, utilisation des coordonnées par défaut.",
             err
           );
           setShowPopup(true);
-          // Utilisation des coordonnées de Metz en cas d'erreur
-          getWeatherData(49.1191, 6.1727);
+          getWeatherData(49.1191, 6.1727); // Coordonnées par défaut
         }
       );
     } else {
-      console.warn("Géolocalisation non prise en charge. Utilisation des coordonnées par défaut.");
+      console.warn("Géolocalisation non prise en charge.");
       setShowPopup(true);
       getWeatherData(49.1191, 6.1727);
     }
@@ -38,11 +41,11 @@ const WeatherPage = () => {
 
   const getWeatherData = async (lat, lon) => {
     try {
-      const response = await axios.get(
-        `http://localhost:8080/api/weather/display?lat=${lat}&lon=${lon}`
+      const weatherResponse = await axiosInstance.get(
+        `/api/weather/display?lat=${lat}&lon=${lon}`
       );
-      console.log("Données météo reçues :", response.data);
-      setWeather(response.data);
+      setWeather(weatherResponse.data);
+      fetchRecommendation();
     } catch (err) {
       console.error("Erreur lors de la récupération des données météo :", err);
     } finally {
@@ -50,9 +53,18 @@ const WeatherPage = () => {
     }
   };
 
+  const fetchRecommendation = async () => {
+    try {
+      const recoResponse = await axiosInstance.get("/api/reco");
+      setRecommendation(recoResponse.data);
+    } catch (err) {
+      console.error("Erreur lors de la récupération de la recommandation :", err);
+    }
+  };
+
   const getWeatherClass = () => {
     if (!weather || !weather.weather || !weather.weather[0] || !weather.weather[0].main) {
-      return ""; 
+      return "";
     }
 
     switch (weather.weather[0].main.toLowerCase()) {
@@ -68,12 +80,22 @@ const WeatherPage = () => {
       case "thunderstorm":
         return "storm";
       default:
-        return ""; 
+        return "";
     }
   };
 
   const handlePopupClose = () => {
     setShowPopup(false);
+  };
+
+  const handleOpenDetails = (outfit) => {
+    setSelectedOutfit(outfit);
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    setSelectedOutfit(null);
   };
 
   return (
@@ -84,10 +106,26 @@ const WeatherPage = () => {
         <div className="weather-info">
           <h1>Météo actuelle</h1>
           <h2>{Math.round(weather.temperature)}°C</h2>
-          <p>{weather.main || "Condition inconnue"}</p>
         </div>
       ) : (
         <p>Pas de données disponibles.</p>
+      )}
+
+      {recommendation && (
+        <div className="recommendation-details">
+          <h2>Recommandation</h2>
+          <div className="recommendation-items">
+            <InventoryItem
+              key={recommendation.id}
+              itemId={recommendation.id}
+              title={recommendation.name}
+              imageSrc={recommendation.clothingList.map((item) => item.cloImageUrl)}
+              clothingNames={recommendation.clothingList.map((item) => item.cloLib)}
+              onClick={() => handleOpenDetails(recommendation)}
+              type="outfit"
+            />
+          </div>
+        </div>
       )}
 
       {showPopup && (
@@ -102,6 +140,14 @@ const WeatherPage = () => {
             <button onClick={handlePopupClose}>Fermer</button>
           </div>
         </div>
+      )}
+
+      {selectedOutfit && (
+        <OutfitDetailsModal
+          open={openModal}
+          onClose={handleCloseModal}
+          outfitReco={selectedOutfit}
+        />
       )}
     </div>
   );
