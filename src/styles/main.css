@@ -1,19 +1,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
 
 body {
-    margin: 0;
-    font-family: "Noto Sans", sans-serif;
-    font-optical-sizing: auto;
-    font-style: normal;
-    font-variation-settings: "wdth" 100;
+  margin: 0;
+  font-family: "Noto Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
 }
 
 .main-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: safe center;
-    min-height: 100vh;
-    height: 100%
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100vh;
+  height: 100%;
+  padding: 0px 16px 0px 16px;
+}
+
+.main-container.no-padding {
+  padding: 0; 
 }
 
 .content {
@@ -23,12 +28,18 @@ body {
 }
 
 @media (min-width: 1080px) {
-    .main-container {
-        max-width: 1080px;
-        margin: 0 auto;
-    }
+  .main-container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0px 8px 0px 8px;
+  }
 
-    .content {
-        padding: 40px;
-    }
+
+  .content {
+    padding: 40px;
+  }
+}
+
+.weather-page-bg {
+  background: rgba(90, 212, 255, 1);
 }
