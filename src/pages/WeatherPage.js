@@ -1,29 +1,61 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import '../styles/WeatherPage/WeatherPage.css';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import "../styles/WeatherPage/WeatherPage.css";
 
 const WeatherPage = () => {
   const [weather, setWeather] = useState(null);
-  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [showPopup, setShowPopup] = useState(false);
 
-  const getWeatherData = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:8080/api/weather/display?lat=49.1191&lon=6.1727"
+  useEffect(() => {
+    getUserLocation();
+  }, []);
+
+  const getUserLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          console.log("Coordonnées GPS :", latitude, longitude);
+          getWeatherData(latitude, longitude);
+        },
+        (err) => {
+          console.warn(
+            "Erreur de géolocalisation. Utilisation des coordonnées par défaut :",
+            err
+          );
+          setShowPopup(true);
+          // Utilisation des coordonnées de Metz en cas d'erreur
+          getWeatherData(49.1191, 6.1727);
+        }
       );
-      setWeather(response.data);
-    } catch (err) {
-      setError("Erreur : impossible de récupérer les données météo.");
+    } else {
+      console.warn("Géolocalisation non prise en charge. Utilisation des coordonnées par défaut.");
+      setShowPopup(true);
+      getWeatherData(49.1191, 6.1727);
     }
   };
 
-  useEffect(() => {
-    getWeatherData();
-  }, []);
+  const getWeatherData = async (lat, lon) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/weather/display?lat=${lat}&lon=${lon}`
+      );
+      console.log("Données météo reçues :", response.data);
+      setWeather(response.data);
+    } catch (err) {
+      console.error("Erreur lors de la récupération des données météo :", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getWeatherClass = () => {
-    if (!weather) return "";
-    switch (weather.main.toLowerCase()) {
+    if (!weather || !weather.weather || !weather.weather[0] || !weather.weather[0].main) {
+      return ""; 
+    }
+
+    switch (weather.weather[0].main.toLowerCase()) {
       case "clear":
         return "sun";
       case "rain":
@@ -36,21 +68,40 @@ const WeatherPage = () => {
       case "thunderstorm":
         return "storm";
       default:
-        return "";
+        return ""; 
     }
+  };
+
+  const handlePopupClose = () => {
+    setShowPopup(false);
   };
 
   return (
     <div className={`weather-container ${getWeatherClass()}`}>
-      {error && <p className="error">{error}</p>}
-      {weather ? (
+      {loading ? (
+        <p>Chargement des données...</p>
+      ) : weather ? (
         <div className="weather-info">
           <h1>Météo actuelle</h1>
           <h2>{Math.round(weather.temperature)}°C</h2>
-          <p>{weather.main}</p>
+          <p>{weather.main || "Condition inconnue"}</p>
         </div>
       ) : (
-        <p>Chargement des données...</p>
+        <p>Pas de données disponibles.</p>
+      )}
+
+      {showPopup && (
+        <div className="popup">
+          <div className="popup-content">
+            <h2>Activer la localisation</h2>
+            <p>
+              Nous n'avons pas pu accéder à votre position. Pour obtenir les
+              données météo locales, veuillez activer l'accès à votre
+              localisation dans les paramètres de votre navigateur.
+            </p>
+            <button onClick={handlePopupClose}>Fermer</button>
+          </div>
+        </div>
       )}
     </div>
   );
