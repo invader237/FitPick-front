@@ -59,6 +59,7 @@ const OutfitInventory = () => {
                 justifyContent: "space-between",
                 alignItems: "stretch",
                 width: "100%",
+                paddingTop: "16px",
             }}
         >
             {loading ? (
