@@ -2,6 +2,11 @@ import React, { useState, useEffect } from "react";
 import axiosInstance from "../utils/axiosConfig";
 import InventoryItem from "../components/Inventory/InventoryItem";
 import OutfitDetailsModal from "../components/OutfitInventory/OutfitDetailsModal";
+import Box from "@mui/joy/Box";
+import Typography from "@mui/joy/Typography";
+import Button from "@mui/joy/Button";
+import Modal from "@mui/joy/Modal";
+import ModalDialog from "@mui/joy/ModalDialog";
 import "../styles/WeatherPage/WeatherPage.css";
 
 const WeatherPage = () => {
@@ -62,28 +67,6 @@ const WeatherPage = () => {
     }
   };
 
-  const getWeatherClass = () => {
-    if (!weather || !weather.weather || !weather.weather[0] || !weather.weather[0].main) {
-      return "";
-    }
-
-    switch (weather.weather[0].main.toLowerCase()) {
-      case "clear":
-        return "sun";
-      case "rain":
-        return "rain";
-      case "snow":
-        return "snow";
-      case "clouds":
-        return "clouds";
-      case "storm":
-      case "thunderstorm":
-        return "storm";
-      default:
-        return "";
-    }
-  };
-
   const handlePopupClose = () => {
     setShowPopup(false);
   };
@@ -99,47 +82,76 @@ const WeatherPage = () => {
   };
 
   return (
-    <div className={`weather-container ${getWeatherClass()}`}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        width: "100%",
+        height: "100vh",
+        gap: "24px",
+      }}
+    >
       {loading ? (
-        <p>Chargement des données...</p>
+        <Typography level="h4">Chargement des données...</Typography>
       ) : weather ? (
-        <div className="weather-info">
-          <h1>Météo actuelle</h1>
-          <h2>{Math.round(weather.temperature)}°C</h2>
-        </div>
+        <Box
+          sx={{
+            textAlign: "center",
+            marginBottom: "24px",
+          }}
+        >
+          <Typography level="h2" sx={{ marginBottom: "8px", color: "#ffffff" }}>
+            Météo actuelle
+          </Typography>
+          <Typography
+            level="h1"
+            sx={{ fontWeight: "bold", color: "#ffffff", fontSize: "5rem" }}
+          >
+            {Math.round(weather.temperature)}°C
+          </Typography>
+        </Box>
       ) : (
-        <p>Pas de données disponibles.</p>
+        <Typography level="h4">Pas de données disponibles.</Typography>
       )}
 
       {recommendation && (
-        <div className="recommendation-details">
-          <h2>Recommandation</h2>
-          <div className="recommendation-items">
-            <InventoryItem
-              key={recommendation.id}
-              itemId={recommendation.id}
-              title={recommendation.name}
-              imageSrc={recommendation.clothingList.map((item) => item.cloImageUrl)}
-              clothingNames={recommendation.clothingList.map((item) => item.cloLib)}
-              onClick={() => handleOpenDetails(recommendation)}
-              type="outfit"
-            />
-          </div>
-        </div>
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "16px",
+            justifyContent: "center",
+            alignItems: "center",
+            width: "100%",
+            maxWidth: "1200px",
+          }}
+        >
+          <InventoryItem
+            key={recommendation.id}
+            itemId={recommendation.id}
+            title={recommendation.name}
+            imageSrc={recommendation.clothingList.map((item) => item.cloImageUrl)}
+            clothingNames={recommendation.clothingList.map((item) => item.cloLib)}
+            onClick={() => handleOpenDetails(recommendation)}
+            type="outfit"
+          />
+        </Box>
       )}
 
       {showPopup && (
-        <div className="popup">
-          <div className="popup-content">
-            <h2>Activer la localisation</h2>
-            <p>
+        <Modal open={showPopup} onClose={handlePopupClose}>
+          <ModalDialog>
+            <Typography level="h4">Activer la localisation</Typography>
+            <Typography sx={{ marginBottom: "16px" }}>
               Nous n'avons pas pu accéder à votre position. Pour obtenir les
               données météo locales, veuillez activer l'accès à votre
               localisation dans les paramètres de votre navigateur.
-            </p>
-            <button onClick={handlePopupClose}>Fermer</button>
-          </div>
-        </div>
+            </Typography>
+            <Button onClick={handlePopupClose}>Fermer</Button>
+          </ModalDialog>
+        </Modal>
       )}
 
       {selectedOutfit && (
@@ -149,7 +161,7 @@ const WeatherPage = () => {
           outfitReco={selectedOutfit}
         />
       )}
-    </div>
+    </Box>
   );
 };
 
