@@ -159,9 +159,8 @@ const ClothingDetailsModal = ({ open, onClose, clothing, onRefresh }) => {
                     </CardContent>
                     <CardActions
                         sx={{
-                            justifyContent: "space-around",
-                            paddingBottom: "16px",
-                            paddingTop: "8px",
+                            display: "flex",
+                            padding: "16px",
                             backgroundColor: "#f9f9f9",
                             borderTop: "1px solid #eee",
                         }}
@@ -179,6 +178,7 @@ const ClothingDetailsModal = ({ open, onClose, clothing, onRefresh }) => {
                                 "&:hover": {
                                     backgroundImage: "linear-gradient(90deg, #0056b3, #007BFF)",
                                 },
+                                width: "100%",
                             }}
                         >
                             Modifier
@@ -192,6 +192,7 @@ const ClothingDetailsModal = ({ open, onClose, clothing, onRefresh }) => {
                                 padding: "8px 16px",
                                 borderRadius: "8px",
                                 fontWeight: "bold",
+                                width: "100%",
                             }}
                         >
                             Supprimer

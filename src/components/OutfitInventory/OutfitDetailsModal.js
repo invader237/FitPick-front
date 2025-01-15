@@ -9,6 +9,7 @@ import Card from "@mui/material/Card";
 import AspectRatio from "@mui/joy/AspectRatio";
 import Chip from "@mui/material/Chip";
 import ConfirmationModal from "./ConfirmationModal";
+import CardActions from "@mui/material/CardActions";
 import EditOutfitModal from "./EditOutfitModal";
 import { getOutfitById, deleteOutfit } from "../../utils/api";
 
@@ -187,10 +188,9 @@ const OutfitDetailsModal = ({ open, onClose, outfitId, onRefresh, outfitReco}) =
                     </Typography>
                     {!outfitReco && (
                     <>
-                    <Box
+                    <CardActions
                         sx={{
                             display: "flex",
-                            justifyContent: "space-around",
                             padding: "16px",
                             borderTop: "1px solid #eee",
                             backgroundColor: "#f9f9f9",
@@ -205,6 +205,7 @@ const OutfitDetailsModal = ({ open, onClose, outfitId, onRefresh, outfitReco}) =
                                 padding: "8px 16px",
                                 borderRadius: "8px",
                                 fontWeight: "bold",
+                                width: "100%",
                             }}
                         >
                             Modifier
@@ -218,11 +219,12 @@ const OutfitDetailsModal = ({ open, onClose, outfitId, onRefresh, outfitReco}) =
                                 padding: "8px 16px",
                                 borderRadius: "8px",
                                 fontWeight: "bold",
+                                width: "100%",
                             }}
                         >
                             Supprimer
                         </Button>
-                    </Box>
+                    </CardActions>
 
                     </>
                     )}
