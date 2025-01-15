@@ -57,6 +57,22 @@ const WeatherPage = () => {
     }
   };
 
+  const tryFetchingLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          console.log("Position récupérée après activation :", latitude, longitude);
+          getWeatherData(latitude, longitude);
+          setShowPopup(false); // Fermer la popup si la localisation est activée après tentative
+        },
+        (err) => {
+          console.warn("Nouvelle tentative échouée.", err);
+        }
+      );
+    }
+  };
+
   const getWeatherData = async (lat, lon) => {
     try {
       const weatherResponse = await axiosInstance.get(
