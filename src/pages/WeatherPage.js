@@ -18,7 +18,12 @@ const WeatherPage = () => {
   const [selectedOutfit, setSelectedOutfit] = useState(null);
 
   useEffect(() => {
-    getUserLocation();
+    const locationStatus = localStorage.getItem("locationStatus");
+    if (locationStatus === "accepted") {
+      getUserLocation();
+    } else {
+      setShowPopup(true);
+    }
   }, []);
 
   const getUserLocation = () => {
@@ -27,15 +32,16 @@ const WeatherPage = () => {
         (position) => {
           const { latitude, longitude } = position.coords;
           getWeatherData(latitude, longitude);
-          setShowPopup(false); // Fermer la popup si la localisation est activée
+          localStorage.setItem("locationStatus", "accepted"); // Enregistrer que l'accès a été accepté
+          setShowPopup(false);
         },
         (err) => {
           if (err.code === err.PERMISSION_DENIED) {
             console.warn(
               "Erreur de géolocalisation, l'utilisateur a refusé l'accès."
             );
-            setShowPopup(true);
-            tryFetchingLocation(); // Essayer de récupérer la localisation à nouveau
+            localStorage.setItem("locationStatus", "refused"); // Enregistrer que l'accès a été refusé
+            setShowPopup(true); // Afficher la popup si l'accès est refusé
           } else {
             console.warn(
               "Erreur de géolocalisation, utilisation des coordonnées par défaut.",
@@ -47,7 +53,7 @@ const WeatherPage = () => {
       );
     } else {
       console.warn("Géolocalisation non prise en charge.");
-      getWeatherData(49.1191, 6.1727);
+      getWeatherData(49.1191, 6.1727); // Coordonnées par défaut
     }
   };
 
@@ -92,7 +98,8 @@ const WeatherPage = () => {
 
   const handlePopupClose = () => {
     setShowPopup(false);
-    getWeatherData(49.1191, 6.1727); // Afficher la météo de Metz après la popup
+    localStorage.setItem("locationStatus", "refused"); // Enregistrer que l'utilisateur a refusé
+    getWeatherData(49.1191, 6.1727); // Afficher la météo par défaut
   };
 
   const handleOpenDetails = (outfit) => {
@@ -166,15 +173,74 @@ const WeatherPage = () => {
 
       {showPopup && (
         <Modal open={showPopup} onClose={handlePopupClose}>
-          <ModalDialog>
-            <Typography level="h4">Activer la localisation</Typography>
-            <Typography sx={{ marginBottom: "16px" }}>
+          <ModalDialog
+            sx={{
+              background: "linear-gradient(145deg, #ffffff, #f0f0f0)",
+              borderRadius: "16px",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+              padding: "24px",
+              textAlign: "center",
+              maxWidth: "400px",
+              width: "90%",
+              margin: "0 auto",
+            }}
+          >
+            <Typography
+              level="h4"
+              sx={{
+                fontSize: "1.5rem",
+                fontWeight: "bold",
+                marginBottom: "16px",
+                color: "#333",
+              }}
+            >
+              Activer la localisation
+            </Typography>
+            <Typography
+              sx={{
+                marginBottom: "24px",
+                fontSize: "1rem",
+                color: "#555",
+                lineHeight: "1.5",
+              }}
+            >
               Nous n'avons pas pu accéder à votre position. Pour obtenir les
               données météo locales, veuillez activer l'accès à votre
               localisation dans les paramètres de votre navigateur.
             </Typography>
-            <Button onClick={() => tryFetchingLocation()}>Réessayer</Button>
-            <Button onClick={handlePopupClose}>Afficher la météo par défaut</Button>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-around",
+                alignItems: "center",
+                gap: "16px",
+              }}
+            >
+              <Button
+                onClick={() => getUserLocation()}
+                sx={{
+                  color: "#fff",
+                  fontWeight: "bold",
+                width: "100%",
+                }}
+              >
+                Réessayer
+              </Button>
+              <Button
+                onClick={handlePopupClose}
+                sx={{
+                  backgroundColor: "#f44336",
+                  color: "#fff",
+                  fontWeight: "bold",
+                  ":hover": {
+                    backgroundColor: "#e53935",
+                  },
+                width: "100%",
+                }}
+              >
+                Météo par défaut
+              </Button>
+            </Box>
           </ModalDialog>
         </Modal>
       )}
