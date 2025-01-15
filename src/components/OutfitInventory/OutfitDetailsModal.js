@@ -12,14 +12,16 @@ import ConfirmationModal from "./ConfirmationModal";
 import EditOutfitModal from "./EditOutfitModal";
 import { getOutfitById, deleteOutfit } from "../../utils/api";
 
-const OutfitDetailsModal = ({ open, onClose, outfitId, onRefresh }) => {
+const OutfitDetailsModal = ({ open, onClose, outfitId, onRefresh, outfitReco}) => {
     const [outfitDetails, setOutfitDetails] = useState(null);
     const [openConfirmModal, setOpenConfirmModal] = useState(false);
     const [openEditModal, setOpenEditModal] = useState(false);
 
     useEffect(() => {
-        if (outfitId) {
+        if (outfitId && !outfitReco) {
             fetchOutfitDetails();
+        } else if(outfitReco) {
+            setOutfitDetails(outfitReco);
         }
     }, [outfitId]);
 
@@ -183,6 +185,8 @@ const OutfitDetailsModal = ({ open, onClose, outfitId, onRefresh }) => {
                     >
                         {outfitDetails.name}
                     </Typography>
+                    {!outfitReco && (
+                    <>
                     <Box
                         sx={{
                             display: "flex",
@@ -219,6 +223,9 @@ const OutfitDetailsModal = ({ open, onClose, outfitId, onRefresh }) => {
                             Supprimer
                         </Button>
                     </Box>
+
+                    </>
+                    )}
                 </Card>
                 <EditOutfitModal
                     open={openEditModal}

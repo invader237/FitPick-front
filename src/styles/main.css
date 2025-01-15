@@ -22,11 +22,10 @@ body {
 }
 
 .content {
-  width: 100%;
-  padding: 20px;
-  box-sizing: border-box;
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
 }
-
 
 @media (min-width: 1080px) {
   .main-container {

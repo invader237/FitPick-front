@@ -1,35 +1,128 @@
-#WeatherPage-container {
-    flex: 1;
-    background: rgba(90,212,255,1);
-    margin: 0;
-    padding: 0;
+/* Conteneur principal */
+.weather-container {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  transition: background 1s ease-in-out;
 }
 
-#meteo-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    margin-top: 50px;
-    width: 100%;
+/* Soleil */
+.sun {
+  background: linear-gradient(to bottom, #FFD700, #FF8C00); /* Dégradé doré à orange vif */
 }
 
-#sun-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: bottom;
+/* Pluie */
+.rain {
+  background: linear-gradient(to bottom, #4B9CD3, #1E3C72); /* Bleu clair à bleu marine */
+  animation: rain-animation 1s linear infinite;
 }
 
-#cloud-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: row;
+@keyframes rain-animation {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 100%;
+  }
 }
 
-#temperature {
-    font-size: 100px;
-    font-weight: 900;
-    color: #fff;
+/* Neige */
+.snow {
+  background: linear-gradient(to bottom, #E0EFFF, #A3CBEF); /* Bleu très pâle */
+  animation: snow-animation 3s linear infinite;
+}
+
+@keyframes snow-animation {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 100%;
+  }
+}
+
+/* Nuages */
+.clouds {
+  background: linear-gradient(to bottom, #D3D3D3, #A9A9A9); /* Gris clair à gris foncé */
+}
+
+/* Tempête */
+.storm {
+  background: linear-gradient(to bottom, #2F4F4F, #000000); /* Gris foncé à noir */
+  animation: storm-animation 0.5s linear infinite;
+}
+
+@keyframes storm-animation {
+  0% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(0.6);
+  }
+  100% {
+    filter: brightness(1);
+  }
+}
+
+/* Texte */
+.weather-info {
+  position: absolute;
+  text-align: center;
+  color: #fff;
+}
+
+.error {
+  color: red;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.popup-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  width: 300px;
+}
+
+.popup-content h2 {
+  margin: 0 0 10px;
+}
+
+.popup-content p {
+  margin: 10px 0;
+}
+
+.popup-content button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+}
+
+.popup-content button:hover {
+  background-color: #0056b3;
 }
