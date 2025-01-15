@@ -1,22 +1,36 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BottomNavigation, BottomNavigationAction, Paper, useMediaQuery } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
-import SearchIcon from '@mui/icons-material/Search';
 import Inventory from '@mui/icons-material/Inventory';
 import { Person } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const Navbar = () => {
-    const [value, setValue] = React.useState(0);
+    const navigate = useNavigate();
+    const location = useLocation();
     const isSmallScreen = useMediaQuery('(max-width:600px)');
     const isExtraSmallScreen = useMediaQuery('(max-width:420px)');
-    const navigate = useNavigate();
 
-  const handleNavigation = (event, newValue) => {
-    setValue(newValue);
-    const routes = ['/', '/', '/inventory', '/profile'];
-    navigate(routes[newValue]);
-  };
+    const routes = ['/inventory', '/', '/profile'];
+    const getValueFromPath = (path) => routes.indexOf(path);
+
+    // Initialiser l'état en fonction de l'URL actuelle
+    const [value, setValue] = React.useState(() => {
+        return getValueFromPath(location.pathname) || 1; // Par défaut, "Accueil"
+    });
+
+    const handleNavigation = (event, newValue) => {
+        setValue(newValue);
+        navigate(routes[newValue]);
+    };
+
+    useEffect(() => {
+        // Mettre à jour l'état si l'URL change
+        const currentValue = getValueFromPath(location.pathname);
+        if (currentValue !== -1 && currentValue !== value) {
+            setValue(currentValue);
+        }
+    }, [location.pathname, value]);
 
     const navbarItemStyle = {
         display: 'flex',
@@ -58,9 +72,8 @@ const Navbar = () => {
                     padding: isExtraSmallScreen ? '0 5px' : '0 16px',
                 }}
             >
-                <BottomNavigationAction sx={navbarItemStyle} label="Accueil" icon={<HomeIcon />} />
-                <BottomNavigationAction sx={navbarItemStyle} label="Recherche" icon={<SearchIcon />} />
                 <BottomNavigationAction sx={navbarItemStyle} label="Inventaire" icon={<Inventory />} />
+                <BottomNavigationAction sx={navbarItemStyle} label="Accueil" icon={<HomeIcon />} />
                 <BottomNavigationAction sx={navbarItemStyle} label="Profil" icon={<Person />} />
             </BottomNavigation>
         </Paper>
