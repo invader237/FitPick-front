@@ -36,7 +36,7 @@ const ClothingInventory = () => {
     };
 
     return (
-        <Box>
+        <Box sx={{ padding: "16px", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
             {loading ? (
                 <Typography>Chargement...</Typography>
             ) : (
@@ -62,7 +62,13 @@ const ClothingInventory = () => {
             )}
             <SpeedDial
                 ariaLabel="Ajouter un vêtement"
-                sx={{ position: "fixed", bottom: 40, right: 40 }}
+                sx={{
+                    position: "fixed", // Fixé par rapport à l'écran
+                    alignSelf: "flex-end", // Aligné à droite
+                    transform: "translateY(-50%)", // Pour aligner parfaitement au centre vertical
+                    bottom: "40px",
+                    zIndex: 1100 // Assurez-vous qu'il reste visible au-dessus des autres éléments
+                }}
                 icon={<AddIcon />}
                 onClick={() => setOpenAddModal(true)}
             />

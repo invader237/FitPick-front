@@ -54,6 +54,7 @@ const OutfitInventory = () => {
             sx={{
                 display: "flex",
                 flexWrap: "wrap",
+                flexDirection: "column",
                 gap: "16px",
                 justifyContent: "space-between",
                 alignItems: "stretch",
@@ -93,9 +94,11 @@ const OutfitInventory = () => {
             <SpeedDial
                 ariaLabel="Ajouter une tenue"
                 sx={{
-                    position: "fixed",
-                    bottom: 40,
-                    right: 40,
+                    position: "fixed", // Fixé par rapport à l'écran
+                    alignSelf: "flex-end", // Aligné à droite
+                    transform: "translateY(-50%)", // Pour aligner parfaitement au centre vertical
+                    bottom: "40px",
+                    zIndex: 1100 // Assurez-vous qu'il reste visible au-dessus des autres éléments
                 }}
                 icon={<AddIcon />}
                 onClick={() => setOpenAddModal(true)}
