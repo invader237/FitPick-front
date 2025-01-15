@@ -27,20 +27,43 @@ const WeatherPage = () => {
         (position) => {
           const { latitude, longitude } = position.coords;
           getWeatherData(latitude, longitude);
+          setShowPopup(false); // Fermer la popup si la localisation est activée
         },
         (err) => {
-          console.warn(
-            "Erreur de géolocalisation, utilisation des coordonnées par défaut.",
-            err
-          );
-          setShowPopup(true);
-          getWeatherData(49.1191, 6.1727); // Coordonnées par défaut
+          if (err.code === err.PERMISSION_DENIED) {
+            console.warn(
+              "Erreur de géolocalisation, l'utilisateur a refusé l'accès."
+            );
+            setShowPopup(true);
+            tryFetchingLocation(); // Essayer de récupérer la localisation à nouveau
+          } else {
+            console.warn(
+              "Erreur de géolocalisation, utilisation des coordonnées par défaut.",
+              err
+            );
+            getWeatherData(49.1191, 6.1727); // Coordonnées par défaut
+          }
         }
       );
     } else {
       console.warn("Géolocalisation non prise en charge.");
-      setShowPopup(true);
       getWeatherData(49.1191, 6.1727);
+    }
+  };
+
+  const tryFetchingLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          console.log("Position récupérée après activation :", latitude, longitude);
+          getWeatherData(latitude, longitude);
+          setShowPopup(false); // Fermer la popup si la localisation est activée après tentative
+        },
+        (err) => {
+          console.warn("Nouvelle tentative échouée.", err);
+        }
+      );
     }
   };
 
@@ -69,6 +92,7 @@ const WeatherPage = () => {
 
   const handlePopupClose = () => {
     setShowPopup(false);
+    getWeatherData(49.1191, 6.1727); // Afficher la météo de Metz après la popup
   };
 
   const handleOpenDetails = (outfit) => {
@@ -149,7 +173,8 @@ const WeatherPage = () => {
               données météo locales, veuillez activer l'accès à votre
               localisation dans les paramètres de votre navigateur.
             </Typography>
-            <Button onClick={handlePopupClose}>Fermer</Button>
+            <Button onClick={() => tryFetchingLocation()}>Réessayer</Button>
+            <Button onClick={handlePopupClose}>Afficher la météo par défaut</Button>
           </ModalDialog>
         </Modal>
       )}
