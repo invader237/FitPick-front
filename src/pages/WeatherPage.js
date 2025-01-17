@@ -198,26 +198,71 @@ const WeatherPage = () => {
         </Box>
       )}
       {showPopup && (
-        <Modal open={showPopup} onClose={handlePopupClose}>
-          <ModalDialog className="weather-location-modal">
-            <Typography level="h4" className="modal-title">
+<Modal open={showPopup} onClose={handlePopupClose}>
+          <ModalDialog
+            sx={{
+              background: "linear-gradient(145deg, #ffffff, #f0f0f0)",
+              borderRadius: "16px",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+              padding: "24px",
+              textAlign: "center",
+              maxWidth: "400px",
+              width: "90%",
+              margin: "0 auto",
+            }}
+          >
+            <Typography
+              level="h4"
+              sx={{
+                fontSize: "1.5rem",
+                fontWeight: "bold",
+                marginBottom: "16px",
+                color: "#333",
+              }}
+            >
               Activer la localisation
             </Typography>
-            <Typography className="modal-message">
+            <Typography
+              sx={{
+                marginBottom: "24px",
+                fontSize: "1rem",
+                color: "#555",
+                lineHeight: "1.5",
+              }}
+            >
               Nous n'avons pas pu accéder à votre position. Pour obtenir les
               données météo locales, veuillez activer l'accès à votre
               localisation dans les paramètres de votre navigateur.
             </Typography>
-            <Box className="modal-buttons">
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-around",
+                alignItems: "center",
+                gap: "16px",
+              }}
+            >
               <Button
-                className="weather-button weather-button-retry"
-                onClick={getUserLocation}
+                onClick={() => getUserLocation()}
+                sx={{
+                  color: "#fff",
+                  fontWeight: "bold",
+                width: "100%",
+                }}
               >
                 Réessayer
               </Button>
               <Button
-                className="weather-button weather-button-default"
                 onClick={handlePopupClose}
+                sx={{
+                  backgroundColor: "#f44336",
+                  color: "#fff",
+                  fontWeight: "bold",
+                  ":hover": {
+                    backgroundColor: "#e53935",
+                  },
+                width: "100%",
+                }}
               >
                 Météo par défaut
               </Button>
@@ -225,7 +270,6 @@ const WeatherPage = () => {
           </ModalDialog>
         </Modal>
       )}
-
 
       {/* Modal pour détails de la tenue */}
       {selectedOutfit && (

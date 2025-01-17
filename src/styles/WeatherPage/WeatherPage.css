@@ -128,8 +128,7 @@ html, body, #root {
   font-size: 2.5rem; /* Augmentation de la taille */
   letter-spacing: 2px;
   margin-bottom: 12px;
-
-  background: linear-gradient(90deg, #FF512F, #DD2476);
+  background: black;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: 2px 2px 4px rgba(0,0,0,0.3); /* Ombre plus prononcée */
@@ -154,14 +153,14 @@ html, body, #root {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px; /* Augmentation de l'espace entre l'icône et le texte */
+  gap: 8px; /* Augmentation de l'espace entre l'icône et le texte */
 
   width: 100px; /* Agrandissement de la taille */
   height: 100px; /* Agrandissement de la taille */
   background: rgba(255, 255, 255, 0.4); /* Légère augmentation de l'opacité */
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-radius: 50%;
+  border-radius: 28px;
   box-shadow: 0 6px 24px rgba(0,0,0,0.25); /* Ombre plus profonde */
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -173,6 +172,7 @@ html, body, #root {
 
 /* Icône dans les stats */
 .weather-stats-icon {
+    margin-top: 12px; /* Ajustement de la marge pour le centrage */
   font-size: 40px !important; /* Augmentation de la taille de l'icône */
   color: #000;
   display: flex;
