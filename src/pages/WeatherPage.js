@@ -11,7 +11,6 @@ import AirIcon from "@mui/icons-material/Air";
 import InvertColorsIcon from "@mui/icons-material/InvertColors";
 
 // Composants personnalisés
-import InventoryItem from "../components/Inventory/InventoryItem";
 import OutfitDetailsModal from "../components/OutfitInventory/OutfitDetailsModal";
 
 // Import des images de fond (adaptez les chemins à votre structure)
@@ -46,26 +45,14 @@ const WeatherPage = () => {
         (position) => {
           const { latitude, longitude } = position.coords;
           getWeatherData(latitude, longitude);
-<<<<<<< HEAD
           localStorage.setItem("locationStatus", "accepted");
-=======
-          localStorage.setItem("locationStatus", "accepted"); // Enregistrer que l'accès a été accepté
->>>>>>> dev
           setShowPopup(false);
         },
         (err) => {
           if (err.code === err.PERMISSION_DENIED) {
-<<<<<<< HEAD
             console.warn("Géolocalisation refusée par l'utilisateur.");
             localStorage.setItem("locationStatus", "refused");
             setShowPopup(true);
-=======
-            console.warn(
-              "Erreur de géolocalisation, l'utilisateur a refusé l'accès."
-            );
-            localStorage.setItem("locationStatus", "refused"); // Enregistrer que l'accès a été refusé
-            setShowPopup(true); // Afficher la popup si l'accès est refusé
->>>>>>> dev
           } else {
             console.warn("Erreur géoloc, utilisation coords par défaut.", err);
             getWeatherData(49.1191, 6.1727);
@@ -73,13 +60,8 @@ const WeatherPage = () => {
         }
       );
     } else {
-<<<<<<< HEAD
       console.warn("Géolocalisation non supportée.");
       getWeatherData(49.1191, 6.1727);
-=======
-      console.warn("Géolocalisation non prise en charge.");
-      getWeatherData(49.1191, 6.1727); // Coordonnées par défaut
->>>>>>> dev
     }
   };
 
@@ -108,13 +90,8 @@ const WeatherPage = () => {
 
   const handlePopupClose = () => {
     setShowPopup(false);
-<<<<<<< HEAD
     localStorage.setItem("locationStatus", "refused");
     getWeatherData(49.1191, 6.1727);
-=======
-    localStorage.setItem("locationStatus", "refused"); // Enregistrer que l'utilisateur a refusé
-    getWeatherData(49.1191, 6.1727); // Afficher la météo par défaut
->>>>>>> dev
   };
 
   const handleOpenDetails = (outfit) => {
@@ -220,11 +197,7 @@ const WeatherPage = () => {
         </Box>
       )}
       {showPopup && (
-<<<<<<< HEAD
 <Modal open={showPopup} onClose={handlePopupClose}>
-=======
-        <Modal open={showPopup} onClose={handlePopupClose}>
->>>>>>> dev
           <ModalDialog
             sx={{
               background: "linear-gradient(145deg, #ffffff, #f0f0f0)",
