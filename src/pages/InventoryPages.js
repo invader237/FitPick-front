@@ -25,7 +25,7 @@ const InventoryPages = () => {
                 value={activeTab}
                 onChange={handleTabChange}
                 className="inventory-tabs"
-                sx={{ bgcolor: 'transparent' }}
+                sx={{ bgcolor: 'transparent', marginTop: "16px" }}
             >
                 <TabList
                     className="inventory-tab-list"

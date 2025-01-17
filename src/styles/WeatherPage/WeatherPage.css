@@ -1,128 +1,406 @@
-/* Conteneur principal */
-.weather-container {
-  position: relative;
-  height: 100vh;
+/* WeatherPage.css */
+
+/* ---------- RESET & BASE ---------- */
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: "Roboto", sans-serif;
+}
+
+/* ---------- CONTAINER PRINCIPAL (PAGE) ---------- */
+.weather-page-container {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  transition: background 1s ease-in-out;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  animation: fadeInBg 1s ease-in-out forwards;
 }
 
-/* Soleil */
-.sun {
-  background: linear-gradient(to bottom, #FFD700, #FF8C00); /* Dégradé doré à orange vif */
+@keyframes fadeInBg {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
-/* Pluie */
-.rain {
-  background: linear-gradient(to bottom, #4B9CD3, #1E3C72); /* Bleu clair à bleu marine */
-  animation: rain-animation 1s linear infinite;
+/* ---------- OVERLAY ANIMÉ (DÉGRADÉ) ---------- */
+.overlay-gradient {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 0, 70, 0.2),
+    rgba(70, 0, 255, 0.2),
+    rgba(0, 255, 150, 0.2)
+  );
+  background-size: 200% 200%;
+  animation: gradientShift 12s ease infinite;
 }
 
-@keyframes rain-animation {
+@keyframes gradientShift {
   0% {
-    background-position: 0 0;
-  }
-  100% {
-    background-position: 0 100%;
-  }
-}
-
-/* Neige */
-.snow {
-  background: linear-gradient(to bottom, #E0EFFF, #A3CBEF); /* Bleu très pâle */
-  animation: snow-animation 3s linear infinite;
-}
-
-@keyframes snow-animation {
-  0% {
-    background-position: 0 0;
-  }
-  100% {
-    background-position: 0 100%;
-  }
-}
-
-/* Nuages */
-.clouds {
-  background: linear-gradient(to bottom, #D3D3D3, #A9A9A9); /* Gris clair à gris foncé */
-}
-
-/* Tempête */
-.storm {
-  background: linear-gradient(to bottom, #2F4F4F, #000000); /* Gris foncé à noir */
-  animation: storm-animation 0.5s linear infinite;
-}
-
-@keyframes storm-animation {
-  0% {
-    filter: brightness(1);
+    background-position: 0% 50%;
   }
   50% {
-    filter: brightness(0.6);
+    background-position: 100% 50%;
   }
   100% {
-    filter: brightness(1);
+    background-position: 0% 50%;
   }
 }
 
-/* Texte */
-.weather-info {
+/* ---------- VAGUE DÉCORATIVE EN BAS ---------- */
+.wave {
   position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  width: 100%;
+  height: 200px; /* Augmentation de la hauteur pour une meilleure visibilité */
+  background: rgba(255,255,255,0.3);
+  transform: translateY(200px);
+  clip-path: path("M0,111 C 80,125 120,140 200,120 C 280,100 360,50 440,70 C 520,90 600,140 680,120 C 760,100 840,20 920,60 C 1000,100 1080,160 1160,130 C 1240,100 1320,80 1400,110 L1400,300 L0,300 Z");
+  animation: fadeInWave 1.5s ease 0.5s forwards;
+}
+
+@keyframes fadeInWave {
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* ---------- LOADING & NO DATA ---------- */
+.weather-loading,
+.weather-no-data {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin-top: 20px;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+  z-index: 3;
+  position: relative;
+}
+
+/* =========================================================================
+   1) CARTE MÉTÉO ACTUELLE (TEMPÉ, VENT, HUMIDITÉ)
+   ========================================================================= */
+.weather-info-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px; /* Augmentation de l'espace entre les éléments */
+  padding: 32px; /* Augmentation du padding pour plus d'espace */
+  margin-top: 24px;
+
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  border-radius: 28px; /* Légère augmentation du rayon des bords */
+  box-shadow: 0 12px 48px rgba(31, 38, 135, 0.5); /* Ombre plus prononcée */
+
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInInfoContainer 0.9s ease 0.7s forwards;
+  z-index: 3;
+  position: relative;
+}
+
+@keyframes fadeInInfoContainer {
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Titre "Météo actuelle" en dégradé */
+.weather-title {
+  font-weight: 800; /* Augmentation du poids pour plus de présence */
+  text-transform: uppercase;
+  font-size: 2.5rem; /* Augmentation de la taille */
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+  background: black;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3); /* Ombre plus prononcée */
+}
+
+/* Grande bulle : température */
+.weather-temperature {
+  font-size: 4rem; /* Augmentation de la taille pour plus d'impact */
+  font-weight: 900; /* Poids très élevé pour une forte présence */
+  color: #000;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.2); /* Ombre pour lisibilité */
+}
+
+/* Bloc des stats : vent et humidité */
+.weather-stats {
+  display: flex;
+  gap: 60px; /* Augmentation de l'espace entre les bulles */
+}
+
+/* Chaque item de stats (vent, humidité) */
+.weather-stats-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px; /* Augmentation de l'espace entre l'icône et le texte */
+
+  width: 100px; /* Agrandissement de la taille */
+  height: 100px; /* Agrandissement de la taille */
+  background: rgba(255, 255, 255, 0.4); /* Légère augmentation de l'opacité */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 28px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.25); /* Ombre plus profonde */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.weather-stats-item:hover {
+  transform: translateY(-6px) scale(1.1); /* Agrandissement et élévation */
+  box-shadow: 0 12px 36px rgba(0,0,0,0.35); /* Ombre renforcée */
+}
+
+/* Icône dans les stats */
+.weather-stats-icon {
+    margin-top: 12px; /* Ajustement de la marge pour le centrage */
+  font-size: 40px !important; /* Augmentation de la taille de l'icône */
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Texte dans les stats */
+.weather-stats-text {
+  font-size: 1.2rem; /* Ajustement de la taille de la police */
+  font-weight: 700;
+  color: #333;
+  text-shadow: none;
+}
+
+/* =========================================================================
+   2) CARTE DE RECOMMANDATION (Vêtements suggérés)
+   ========================================================================= */
+.weather-reco-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px; /* Augmentation de l'espace entre les éléments */
+
+  width: 360px; /* Augmentation de la largeur */
+  padding: 24px; /* Augmentation du padding */
+  margin-top: 24px;
+
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  border-radius: 24px; /* Augmentation du rayon des bords */
+  box-shadow: 0 12px 48px rgba(31, 38, 135, 0.5); /* Ombre plus prononcée */
+
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInCard 1s ease 1.2s forwards;
+  z-index: 3; 
+  position: relative;
+}
+
+@keyframes fadeInCard {
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.weather-reco-card:hover {
+  transform: scale(1.05); /* Légère augmentation de l'échelle */
+  transition: transform 0.3s ease-in-out;
+}
+
+.weather-reco-title {
+  font-weight: 600;
+  font-size: 1.4rem; /* Augmentation de la taille */
+  color: #333;
+}
+
+/* Aperçu des vêtements */
+.weather-outfit-preview {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px; /* Augmentation de l'espace entre les images */
+}
+
+.weather-outfit-img {
+  width: 70px; /* Augmentation de la taille */
+  height: 70px; /* Augmentation de la taille */
+  object-fit: contain;
+  background-color: #fff;
+  border-radius: 10px; /* Augmentation du rayon des bords */
+  padding: 8px; /* Augmentation du padding */
+  box-shadow: 0 6px 16px rgba(0,0,0,0.25); /* Ombre plus profonde */
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.weather-outfit-img:hover {
+  transform: translateY(-6px); /* Augmentation de l'élévation */
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35); /* Ombre renforcée */
+}
+
+/* Bouton "Voir détails" */
+.weather-details-btn {
+  background-color: #ffb300;
+  color: #333;
+  font-weight: 700; /* Augmentation du poids */
+  border-radius: 8px; /* Augmentation du rayon des bords */
+  padding: 10px 20px; /* Augmentation du padding */
+  cursor: pointer;
+  text-transform: uppercase;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25); /* Ombre plus prononcée */
+  transition: background-color 0.2s, transform 0.3s, box-shadow 0.3s;
+}
+
+.weather-details-btn:hover {
+  background-color: #ffa000;
+  transform: translateY(-3px); /* Augmentation de l'élévation */
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35); /* Ombre renforcée */
+}
+
+/* =========================================================================
+   3) MODAL DE LOCALISATION
+   ========================================================================= */
+.weather-location-modal {
+  background: linear-gradient(145deg, #ffffff, #f0f0f0);
+  border-radius: 20px; /* Augmentation du rayon des bords */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); /* Ombre plus profonde */
+  padding: 28px; /* Augmentation du padding */
   text-align: center;
+  max-width: 450px; /* Augmentation de la largeur */
+  width: 90%;
+  margin: 0 auto;
+}
+
+/* Titres et messages dans la modal */
+.modal-title {
+  font-size: 1.4rem; /* Réduction de la taille */
+  font-weight: 700; /* Poids élevé pour le titre */
+  margin-bottom: 12px;
+  color: #333;
+}
+
+.modal-message {
+  font-size: 0.95rem; /* Taille réduite pour le message */
+  margin-bottom: 20px;
+  color: #555;
+}
+
+/* Boutons dans la modal */
+.modal-buttons {
+  display: flex;
+  gap: 12px; /* Réduction de l'espace entre les boutons */
+}
+
+.weather-button {
+  font-weight: 700; /* Augmentation du poids */
+  border: none;
+  outline: none;
+  cursor: pointer;
+  flex: 1;
+  padding: 12px 16px; /* Taille du padding ajustée */
+  margin: 0;
+  border-radius: 10px; /* Augmentation du rayon des bords */
+  transition: background-color 0.3s ease-in-out, transform 0.2s, box-shadow 0.2s;
+}
+
+.weather-button-retry {
+  background-color: #0288d1;
   color: #fff;
 }
 
-.error {
-  color: red;
-  font-size: 1.5rem;
-  text-align: center;
+.weather-button-retry:hover {
+  background-color: #0277bd;
+  transform: translateY(-2px); /* Augmentation de l'élévation */
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3); /* Ombre renforcée */
 }
 
-
-.popup {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
+.weather-button-default {
+  background-color: #f44336;
+  color: #fff;
 }
 
-.popup-content {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  text-align: center;
-  width: 300px;
+.weather-button-default:hover {
+  background-color: #e53935;
+  transform: translateY(-2px); /* Augmentation de l'élévation */
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3); /* Ombre renforcée */
 }
 
-.popup-content h2 {
-  margin: 0 0 10px;
-}
+/* =========================================================================
+   4) RESPONSIVE
+   ========================================================================= */
+@media (max-width: 600px) {
+  .weather-info-container {
+    width: 95%; /* Ajustement pour les petits écrans */
+    padding: 20px;
+  }
 
-.popup-content p {
-  margin: 10px 0;
-}
+  .weather-title {
+    font-size: 2rem;
+  }
 
-.popup-content button {
-  margin-top: 15px;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  background-color: #007bff;
-  color: white;
-  cursor: pointer;
-}
+  .weather-temperature {
+    font-size: 3.5rem;
+  }
 
-.popup-content button:hover {
-  background-color: #0056b3;
+  .weather-stats {
+    gap: 40px;
+  }
+
+  .weather-stats-item {
+    width: 100px; /* Maintien de la taille agrandie */
+    height: 100px;
+    gap: 14px;
+  }
+
+  .weather-stats-icon {
+    font-size: 32px !important; /* Taille réduite pour mobile */
+  }
+
+  .weather-stats-text {
+    font-size: 1rem; /* Taille de police ajustée pour mobile */
+  }
+
+  .weather-reco-card {
+    width: 300px;
+    padding: 20px;
+  }
+
+  .weather-outfit-preview {
+    gap: 14px;
+  }
+
+  .weather-outfit-img {
+    width: 60px;
+    height: 60px;
+    padding: 6px;
+  }
+
+  .weather-details-btn {
+    padding: 12px 24px;
+  }
+
+  .wave {
+    height: 160px; /* Ajustement de la hauteur */
+    clip-path: path("M0,90 C 60,110 90,130 150,110 C 210,90 270,40 330,60 C 390,80 450,130 510,110 C 570,90 630,10 690,50 C 750,90 810,150 870,120 C 930,90 990,70 1050,100 L1050,300 L0,300 Z");
+  }
+  
 }
